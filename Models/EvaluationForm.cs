@@ -12,7 +12,7 @@ namespace VirtualOffice.Models
         public int EmployeeId { get; set; }
         public virtual Employee? Employee { get; set; }
 
-        [ForeignKey(nameof(Employee))]
+        [ForeignKey(nameof(Manager))]
         public int ManagerId { get; set; }
         public virtual Employee? Manager { get; set; }
 

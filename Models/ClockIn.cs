@@ -6,8 +6,8 @@ namespace VirtualOffice.Models
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public TimeOnly ClockInTime { get; set; }
-        public TimeOnly ClockOutTime { get; set; }
+        public DateTime ClockInTime { get; set; }
+        public DateTime ClockOutTime { get; set; }
         [ForeignKey(nameof(Employee))]
         public int EmployeeId { get; set; }
         public virtual Employee? Employee { get; set; }

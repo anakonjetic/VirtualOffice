@@ -12,6 +12,7 @@ namespace VirtualOffice.Models
         public virtual Employee? Employee { get; set; }
         public DateTime CreatedDate { get; set; }
 
+        [ForeignKey(nameof(Manager))]
         public int ManagerId { get; set; }
         public virtual Employee? Manager { get; set; }
 
