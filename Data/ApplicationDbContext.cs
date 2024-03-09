@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VirtualOffice.Models;
 
@@ -122,6 +123,63 @@ namespace VirtualOffice.Data
                     Id = 6,
                     Name = "Keyboard Logitech",
                     CategoryId = 5
+                }
+            );
+
+            modelBuilder.Entity<IdentityUser>().HasData(
+                new IdentityUser
+                {
+                    Id = "1e95f075-9cbd-4252-8a25-faeb03e0449e",
+                    UserName = "akonjetic@tvz.hr",
+                    NormalizedUserName = "AKONJETIC@TVZ.HR",
+                    Email = "akonjetic@tvz.hr",
+                    NormalizedEmail = "AKONJETIC@TVZ.HR",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAEHdoVZxob+hAFS7k94sF73hok2cbxnwffaz2Lh64SLJjSL4RXBfMEOhRYa4FfNRbgw==",
+                    SecurityStamp = "DLH4EV4JMJXZHL7E26I56PEVVUUTTIHP",
+                    ConcurrencyStamp = "4f6b5901-3484-4193-8019-eda79b7bb7c4",
+                    PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                },
+                new IdentityUser
+                {
+                    Id = "9ad46335-32b4-492d-8592-4379e0f2f108",
+                    UserName = "mtkalec@tvz.hr",
+                    NormalizedUserName = "MTKALEC@TVZ.HR",
+                    Email = "mtkalec@tvz.hr",
+                    NormalizedEmail = "MTKALEC@TVZ.HR",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAECk7W8s/aNRCGsRYsTy4OFTL6m6UtZ24akpO+00ixeCfe5jOnRa2RaUgTCgdLqE+wQ==",
+                    SecurityStamp = "2P3O5IYYVMYAJPTP4SJBNZCKWICKIUFJ",
+                    ConcurrencyStamp = "24c9aa1d-9f2a-46a0-86e1-a243019622b6",
+                    PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
+                },
+                new IdentityUser
+                {
+                    Id = "f0e2bb7d-9ef4-421d-ad33-850f079c9507",
+                    UserName = "ijelinic@tvz.hr",
+                    NormalizedUserName = "IJELINIC@TVZ.HR",
+                    Email = "ijelinic@tvz.hr",
+                    NormalizedEmail = "IJELINIC@TVZ.HR",
+                    EmailConfirmed = false,
+                    PasswordHash = "AQAAAAEAACcQAAAAEDWL7FHTTTSozek+8JSsLrZVKVgj1weRDzOIbyHFxCdt2ql3B/aV21aAW36GbV3wRw==",
+                    SecurityStamp = "XGHG2H7ZFL7VBGKKCEK7F62YQH7JCJP7",
+                    ConcurrencyStamp = "a097299b-84ec-4ac4-a12e-f29c46f83610",
+                    PhoneNumber = null,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnd = null,
+                    LockoutEnabled = true,
+                    AccessFailedCount = 0
                 }
             );
 
