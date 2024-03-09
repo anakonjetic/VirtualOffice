@@ -4,7 +4,7 @@ using VirtualOffice.Models;
 
 namespace VirtualOffice.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
@@ -16,7 +16,6 @@ namespace VirtualOffice.Data
         public DbSet<EvaluationForm> EvaluationForm { get; set; }
         public DbSet<Request> Request { get; set; }
         public DbSet<Team> Team { get; set; }
-        public DbSet<User> User { get; set; }
         public DbSet<EmployeeManager> EmployeeManager { get; set; }
         public DbSet<EvaluationType> EvaluationType { get; set; }
         public DbSet<Status> Status { get; set; }
@@ -70,10 +69,6 @@ namespace VirtualOffice.Data
                 .HasForeignKey(ef => ef.EvaluationTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "user1", Password = "password1", Email = "user1@example.com" },
-                new User { Id = 2, Username = "user2", Password = "password2", Email = "user2@example.com" }
-            );
 
             modelBuilder.Entity<Team>().HasData(
                new Team { Id = 1, Name = "Development" },
@@ -135,26 +130,38 @@ namespace VirtualOffice.Data
                 new Employee
                 {
                     Id = 1,
-                    FirstName = "John",
-                    LastName = "Doe",
-                    DateOfBirth = new DateTime(1990, 1, 1),
+                    FirstName = "Ana",
+                    LastName = "Konjetić",
+                    DateOfBirth = new DateTime(2000, 8, 11),
                     RemainingDaysOff = 20,
                     SickLeaveDaysUsed = 5,
                     EquipmentId = "1#2#3",
                     TeamId = 1,
-                    UserId = 1
+                    UserId = "1e95f075-9cbd-4252-8a25-faeb03e0449e"
                 },
                 new Employee
                 {
                     Id = 2,
-                    FirstName = "Jane",
-                    LastName = "Doe",
-                    DateOfBirth = new DateTime(1995, 2, 15),
+                    FirstName = "Marko",
+                    LastName = "Tkalec",
+                    DateOfBirth = new DateTime(1997, 2, 9),
                     RemainingDaysOff = 15,
                     SickLeaveDaysUsed = 2,
                     EquipmentId = "4#5#6",
                     TeamId = 2,
-                    UserId = 2
+                    UserId = "9ad46335-32b4-492d-8592-4379e0f2f108"
+                },
+                new Employee
+                {
+                    Id = 3,
+                    FirstName = "Ivan",
+                    LastName = "Jelinić",
+                    DateOfBirth = new DateTime(2000, 6, 7),
+                    RemainingDaysOff = 15,
+                    SickLeaveDaysUsed = 2,
+                    EquipmentId = "1#3#6",
+                    TeamId = 3,
+                    UserId = "f0e2bb7d-9ef4-421d-ad33-850f079c9507"
                 }
             );
 

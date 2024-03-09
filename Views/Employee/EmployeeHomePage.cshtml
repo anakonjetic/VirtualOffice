@@ -1,0 +1,126 @@
+﻿
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vertical Navigation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .top-card {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 100px;
+      background-color: #007bff; /* Example color, you can change it */
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vertical-nav {
+      position: fixed;
+      left: 0;
+      top: 0; /* Adjust according to top card height */
+      width: 200px; /* Adjust as needed */
+      height: 100%; /* Adjust according to top card height */
+      background-color: #333;
+    }
+
+    .vertical-nav ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .vertical-nav li {
+      border-bottom: 1px solid #555;
+    }
+
+    .vertical-nav li:last-child {
+      border-bottom: none;
+    }
+
+    .vertical-nav a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 20px;
+    }
+
+    .vertical-nav a:hover {
+      background-color: #555;
+    }
+
+    /* Added styles for user circle */
+    .user-circle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+      height: 40px;
+      background-color: #555;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    /* Dropdown styles */
+    .dropdown {
+      position: absolute;
+      top: 60px; /* Adjust according to top card height */
+      right: 15px;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .dropdown a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <nav class="vertical-nav">
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Portfolio</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="top-card">
+    This is the top card content
+    <div class="user-circle" onclick="toggleDropdown()">JD</div>
+    <div class="dropdown" id="dropdown">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
+    </div>
+  </div>
+
+   <script>
+    function toggleDropdown() {
+      var dropdown = document.getElementById("dropdown");
+      if (dropdown.style.display === "none" || dropdown.style.display === "") {
+        dropdown.style.display = "block";
+      } else {
+        dropdown.style.display = "none";
+      }
+    }
+
+  
+  </script>
+</body>
