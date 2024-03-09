@@ -107,7 +107,7 @@
     <div class="dropdown" id="dropdown">
       <a href="#">Profile</a>
       <a href="#">Settings</a>
-      <a href="#">Logout</a>
+      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
   </div>
 
@@ -120,5 +120,7 @@
         dropdown.style.display = "none";
       }
     }
+
+  
   </script>
 </body>

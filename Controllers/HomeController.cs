@@ -15,7 +15,16 @@ namespace VirtualOffice.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                // Redirect to the EmployeeHomePage action of the EmployeeController
+                return RedirectToAction("EmployeeHomePage", "Employee");
+            }
+            else
+            {
+                // If the user is not authenticated, display the default view
+                return View();
+            }
         }
 
         public IActionResult Privacy()
