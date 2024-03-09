@@ -70,6 +70,96 @@ namespace VirtualOffice.Data
                 .HasForeignKey(ef => ef.EvaluationTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "user1", Password = "password1", Email = "user1@example.com" },
+                new User { Id = 2, Username = "user2", Password = "password2", Email = "user2@example.com" }
+            );
+
+            modelBuilder.Entity<Team>().HasData(
+               new Team { Id = 1, Name = "Development" },
+               new Team { Id = 2, Name = "Marketing" },
+               new Team { Id = 3, Name = "Finance" },
+               new Team { Id = 4, Name = "Retail" },
+               new Team { Id = 5, Name = "Administration" }
+            );
+
+            modelBuilder.Entity<EquipmentCategory>().HasData(
+               new EquipmentCategory { Id = 1, Name = "Computers" },
+               new EquipmentCategory { Id = 2, Name = "Printers and scanners" },
+               new EquipmentCategory { Id = 3, Name = "Telecommunication" },
+               new EquipmentCategory { Id = 4, Name = "Presentation" },
+               new EquipmentCategory { Id = 5, Name = "Computer peripherals" }
+           );
+
+            modelBuilder.Entity<Equipment>().HasData(
+                new Equipment
+                {
+                    Id = 1,
+                    Name = "Laptop HP",
+                    CategoryId = 1
+                },
+                new Equipment
+                {
+                    Id = 2,
+                    Name = "Laptop Macbook",
+                    CategoryId = 1
+                },
+                new Equipment
+                {
+                    Id = 3,
+                    Name = "Laptop Lenovo",
+                    CategoryId = 1
+                },
+                new Equipment
+                {
+                    Id = 4,
+                    Name = "Mouse Logitech",
+                    CategoryId = 5
+                },
+                new Equipment
+                {
+                    Id = 5,
+                    Name = "Mouse Apple",
+                    CategoryId = 5
+                },
+                new Equipment
+                {
+                    Id = 6,
+                    Name = "Keyboard Logitech",
+                    CategoryId = 5
+                }
+            );
+
+
+            modelBuilder.Entity<Employee>().HasData(
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    RemainingDaysOff = 20,
+                    SickLeaveDaysUsed = 5,
+                    EquipmentId = "1#2#3",
+                    TeamId = 1,
+                    UserId = 1
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Jane",
+                    LastName = "Doe",
+                    DateOfBirth = new DateTime(1995, 2, 15),
+                    RemainingDaysOff = 15,
+                    SickLeaveDaysUsed = 2,
+                    EquipmentId = "4#5#6",
+                    TeamId = 2,
+                    UserId = 2
+                }
+            );
+
+
+
             base.OnModelCreating(modelBuilder);
         }
     }
