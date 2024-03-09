@@ -22,6 +22,9 @@ namespace VirtualOffice.Models
         public virtual User? User { get; set; }
         public virtual ICollection<Request>? Request { get; set; }
         public virtual ICollection<ClockIn>? ClockIn { get; set; }
+
+        public virtual ICollection<EmployeeManager>? ManagedEmployees { get; set; }
+        public virtual ICollection<EmployeeManager>? ManagingEmployees { get; set; }
     }
 
     public class EmployeeManager

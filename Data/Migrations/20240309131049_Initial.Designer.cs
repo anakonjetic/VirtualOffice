@@ -12,7 +12,7 @@ using VirtualOffice.Data;
 namespace VirtualOffice.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240307215742_Initial")]
+    [Migration("20240309131049_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,6 +169,9 @@ namespace VirtualOffice.Data.Migrations
                     b.Property<int>("EvaluationTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("EvaluationTypeId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("FormDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -188,6 +191,8 @@ namespace VirtualOffice.Data.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("EvaluationTypeId");
+
+                    b.HasIndex("EvaluationTypeId1");
 
                     b.HasIndex("ManagerId");
 
@@ -353,15 +358,15 @@ namespace VirtualOffice.Data.Migrations
             modelBuilder.Entity("VirtualOffice.Models.EmployeeManager", b =>
                 {
                     b.HasOne("VirtualOffice.Models.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("ManagedEmployees")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VirtualOffice.Models.Employee", "Manager")
-                        .WithMany()
+                        .WithMany("ManagingEmployees")
                         .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Employee");
@@ -383,19 +388,23 @@ namespace VirtualOffice.Data.Migrations
                     b.HasOne("VirtualOffice.Models.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VirtualOffice.Models.EvaluationType", "EvaluationType")
-                        .WithMany("EvaluationForm")
+                        .WithMany()
                         .HasForeignKey("EvaluationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("VirtualOffice.Models.EvaluationType", null)
+                        .WithMany("EvaluationForm")
+                        .HasForeignKey("EvaluationTypeId1");
 
                     b.HasOne("VirtualOffice.Models.Employee", "Manager")
                         .WithMany()
                         .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Employee");
@@ -443,6 +452,10 @@ namespace VirtualOffice.Data.Migrations
             modelBuilder.Entity("VirtualOffice.Models.Employee", b =>
                 {
                     b.Navigation("ClockIn");
+
+                    b.Navigation("ManagedEmployees");
+
+                    b.Navigation("ManagingEmployees");
 
                     b.Navigation("Request");
                 });
