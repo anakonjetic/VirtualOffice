@@ -2,6 +2,10 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
+@{
+    var returnUrl = Context.Request.Query["ReturnUrl"];
+}
+
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
@@ -16,11 +20,25 @@
 }
 else
 {
-    <li class="nav-item">
+   /* <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
+    </li>*/
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
     </li>
 }
 </ul>
+
+
+@section Scripts {
+    <script>
+        // Redirect to EmployeeHomePage after successful login
+        window.onload = function () {
+            var isAuthenticated = '@User.Identity.IsAuthenticated';
+            if (isAuthenticated === 'True') {
+                window.location.href = '/Employee/EmployeeHomePage';
+            }
+        };
+    </script>
+}
+
