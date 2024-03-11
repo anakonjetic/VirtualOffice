@@ -1,4 +1,6 @@
-﻿
+﻿@using Microsoft.AspNetCore.Identity
+
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,26 +17,30 @@
       left: 200px;
       right: 0;
       height: 100px;
-      background-color: #007bff; /* Example color, you can change it */
+      background-color: #007bff;
       color: #fff;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 40px;
+      display: flex;
+      align-items: center; 
+      justify-content: flex-start; 
+      padding-left: 20px;
     }
 
     .vertical-nav {
       position: fixed;
       left: 0;
-      top: 0; /* Adjust according to top card height */
-      width: 200px; /* Adjust as needed */
-      height: 100%; /* Adjust according to top card height */
+      top: 0; 
+      width: 200px; 
+      height: 100%; 
       background-color: #333;
     }
 
-    .vertical-nav ul {
+    .vertical-nav ul {  
+      border-top: 1px solid #555;
+      margin-top: 100px;
       list-style-type: none;
       padding: 0;
-      margin: 0;
     }
 
     .vertical-nav li {
@@ -56,13 +62,12 @@
       background-color: #555;
     }
 
-    /* Added styles for user circle */
     .user-circle {
       position: absolute;
       top: 15px;
       right: 15px;
-      width: 40px;
-      height: 40px;
+      width: 60px;
+      height: 60px;
       background-color: #555;
       border-radius: 50%;
       display: flex;
@@ -70,17 +75,18 @@
       justify-content: center;
       cursor: pointer;
       color: #fff;
+      font-size: 25px;
     }
 
-    /* Dropdown styles */
     .dropdown {
       position: absolute;
-      top: 60px; /* Adjust according to top card height */
+      top: 60px; 
       right: 15px;
       background-color: #333;
       padding: 10px;
       border-radius: 5px;
       display: none;
+      font-size: 20px;
     }
 
     .dropdown a {
@@ -88,22 +94,48 @@
       color: #fff;
       text-decoration: none;
       padding: 5px 0;
+      font-size: 20px;
     }
   </style>
 </head>
 <body>
   <nav class="vertical-nav">
     <ul>
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Services</a></li>
-      <li><a href="#">Portfolio</a></li>
-      <li><a href="#">Contact</a></li>
+      <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li>
+      <li><a href="#">Evaluation Form</a></li>
+      <li><a href="#">Out of Office Forms</a></li>
+      <li><a href="#">Equipment Management</a></li>
+      <li><a href="#">Clock In - Clock Out</a></li>
+      <li><a href="#">Office Hierarchy</a></li>
     </ul>
   </nav>
   <div class="top-card">
-    This is the top card content
-    <div class="user-circle" onclick="toggleDropdown()">JD</div>
+    @{
+        string username = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            int atIndex = email.IndexOf('@');
+            if (atIndex != -1)
+            {
+                username = email.Substring(0, atIndex);
+            }
+            else
+            {
+                username = email;
+            }
+        }
+    }
+    Hello, @username!
+    
+    <div class="user-circle" onclick="toggleDropdown()" style="text-transform: uppercase;"> @{
+        string userId = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            userId = (email.Substring(0, 2));
+        }
+    }@userId</div>
     <div class="dropdown" id="dropdown">
       <a href="#">Profile</a>
       <a href="#">Settings</a>
