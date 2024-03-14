@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VirtualOffice.Data;
 
@@ -11,9 +12,10 @@ using VirtualOffice.Data;
 namespace VirtualOffice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240314184145_EmployeeManagerUpdate")]
+    partial class EmployeeManagerUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,7 +356,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 20,
                             SickLeaveDaysUsed = 5,
                             TeamId = 1,
-                            UserId = "akonjetic@tvz.hr"
+                            UserId = "1e95f075-9cbd-4252-8a25-faeb03e0449e"
                         },
                         new
                         {
@@ -366,7 +368,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 15,
                             SickLeaveDaysUsed = 2,
                             TeamId = 2,
-                            UserId = "mtkalec@tvz.hr"
+                            UserId = "9ad46335-32b4-492d-8592-4379e0f2f108"
                         },
                         new
                         {
@@ -378,7 +380,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 15,
                             SickLeaveDaysUsed = 2,
                             TeamId = 3,
-                            UserId = "ijelinic@tvz.hr"
+                            UserId = "f0e2bb7d-9ef4-421d-ad33-850f079c9507"
                         },
                         new
                         {
@@ -510,7 +512,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 25,
                             SickLeaveDaysUsed = 1,
                             TeamId = 5,
-                            UserId = "lkranjcec@tvz.hr"
+                            UserId = "f0e2bb7d-9ef4-421d-ad33-850f079c9507"
                         },
                         new
                         {
@@ -522,7 +524,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 12,
                             SickLeaveDaysUsed = 10,
                             TeamId = 4,
-                            UserId = "lradosev1@tvz.hr"
+                            UserId = "c74eba9f-b845-4a07-b524-16333e5d0a28"
                         });
                 });
 

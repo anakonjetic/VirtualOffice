@@ -182,7 +182,7 @@ namespace VirtualOffice.Data
                     AccessFailedCount = 0
                 }
             );
-
+          
 
             modelBuilder.Entity<Employee>().HasData(
                 new Employee
@@ -195,7 +195,7 @@ namespace VirtualOffice.Data
                     SickLeaveDaysUsed = 5,
                     EquipmentId = "1#2#3",
                     TeamId = 1,
-                    UserId = "1e95f075-9cbd-4252-8a25-faeb03e0449e"
+                    UserId = "akonjetic@tvz.hr"
                 },
                 new Employee
                 {
@@ -207,7 +207,7 @@ namespace VirtualOffice.Data
                     SickLeaveDaysUsed = 2,
                     EquipmentId = "4#5#6",
                     TeamId = 2,
-                    UserId = "9ad46335-32b4-492d-8592-4379e0f2f108"
+                    UserId = "mtkalec@tvz.hr"
                 },
                 new Employee
                 {
@@ -219,9 +219,171 @@ namespace VirtualOffice.Data
                     SickLeaveDaysUsed = 2,
                     EquipmentId = "1#3#6",
                     TeamId = 3,
-                    UserId = "f0e2bb7d-9ef4-421d-ad33-850f079c9507"
-                }
+                    UserId = "ijelinic@tvz.hr"
+                },               
+                new Employee
+                {
+                    Id = 4,
+                    FirstName = "Marina",
+                    LastName = "Marković",
+                    DateOfBirth = new DateTime(1985, 9, 18),
+                    RemainingDaysOff = 17,
+                    SickLeaveDaysUsed = 2,
+                    EquipmentId = "1#4#5",
+                    TeamId = 1,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 5,
+                    FirstName = "Ivan",
+                    LastName = "Babić",
+                    DateOfBirth = new DateTime(1995, 6, 25),
+                    RemainingDaysOff = 19,
+                    SickLeaveDaysUsed = 3,
+                    EquipmentId = "2#3#6",
+                    TeamId = 2,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 6,
+                    FirstName = "Ana",
+                    LastName = "Knežević",
+                    DateOfBirth = new DateTime(1993, 11, 30),
+                    RemainingDaysOff = 15,
+                    SickLeaveDaysUsed = 2,
+                    EquipmentId = "1#3#5",
+                    TeamId = 3,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 7,
+                    FirstName = "Petar",
+                    LastName = "Petrović",
+                    DateOfBirth = new DateTime(1987, 4, 17),
+                    RemainingDaysOff = 18,
+                    SickLeaveDaysUsed = 3,
+                    EquipmentId = "2#4#6",
+                    TeamId = 1,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 8,
+                    FirstName = "Martina",
+                    LastName = "Šimunović",
+                    DateOfBirth = new DateTime(1991, 7, 9),
+                    RemainingDaysOff = 16,
+                    SickLeaveDaysUsed = 2,
+                    EquipmentId = "3#5#6",
+                    TeamId = 2,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 9,
+                    FirstName = "Antonio",
+                    LastName = "Vuković",
+                    DateOfBirth = new DateTime(1989, 2, 14),
+                    RemainingDaysOff = 20,
+                    SickLeaveDaysUsed = 1,
+                    EquipmentId = "1#4#5",
+                    TeamId = 3,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 10,
+                    FirstName = "Jelena",
+                    LastName = "Matković",
+                    DateOfBirth = new DateTime(1994, 10, 7),
+                    RemainingDaysOff = 17,
+                    SickLeaveDaysUsed = 2,
+                    EquipmentId = "2#3#6",
+                    TeamId = 1,
+                    UserId = ""
+                },                 
+                new Employee
+                {
+                    Id = 11,
+                    FirstName = "Ivana",
+                    LastName = "Horvat",
+                    DateOfBirth = new DateTime(1988, 8, 21),
+                    RemainingDaysOff = 16,
+                    SickLeaveDaysUsed = 3,
+                    EquipmentId = "2#4#6",
+                    TeamId = 2,
+                    UserId = ""
+                },
+                new Employee
+                {
+                    Id = 12,
+                    FirstName = "Luka",
+                    LastName = "Kovač",
+                    DateOfBirth = new DateTime(1992, 3, 7),
+                    RemainingDaysOff = 20,
+                    SickLeaveDaysUsed = 1,
+                    EquipmentId = "3#5#6",
+                    TeamId = 3,
+                    UserId = ""
+                },
+                 new Employee
+                 {
+                     Id = 13,
+                     FirstName = "Ante",
+                     LastName = "Kovačić",
+                     DateOfBirth = new DateTime(1990, 5, 12),
+                     RemainingDaysOff = 18,
+                     SickLeaveDaysUsed = 4,
+                     EquipmentId = "1#2#3",
+                     TeamId = 1,
+                     UserId = ""
+                 },
+                  new Employee
+                  {
+                      Id = 14,
+                      FirstName = "Lucija",
+                      LastName = "Kranjčec",
+                      DateOfBirth = new DateTime(2001, 5, 31),
+                      RemainingDaysOff = 25,
+                      SickLeaveDaysUsed = 1,
+                      EquipmentId = "4#5#6",
+                      TeamId = 5,
+                      UserId = "lkranjcec@tvz.hr"
+                  },
+                   new Employee
+                   {
+                       Id = 15,
+                       FirstName = "Luka",
+                       LastName = "Radošević",
+                       DateOfBirth = new DateTime(2000, 1, 1),
+                       RemainingDaysOff = 12,
+                       SickLeaveDaysUsed = 10,
+                       EquipmentId = "1#2#3",
+                       TeamId = 4,
+                       UserId = "lradosev1@tvz.hr"
+                   }
+
             );
+
+            modelBuilder.Entity<EmployeeManager>().HasData(
+                new EmployeeManager { ManagerId = 1, EmployeeId = 4 }, 
+                new EmployeeManager { ManagerId = 2, EmployeeId = 5 }, 
+                new EmployeeManager { ManagerId = 3, EmployeeId = 6 }, 
+                new EmployeeManager { ManagerId = 1, EmployeeId = 7 }, 
+                new EmployeeManager { ManagerId = 2, EmployeeId = 8 }, 
+                new EmployeeManager { ManagerId = 3, EmployeeId = 9 }, 
+                new EmployeeManager { ManagerId = 1, EmployeeId = 10 }, 
+                new EmployeeManager { ManagerId = 2, EmployeeId = 11 }, 
+                new EmployeeManager { ManagerId = 3, EmployeeId = 12 }, 
+                new EmployeeManager { ManagerId = 1, EmployeeId = 13 },
+                new EmployeeManager { ManagerId = 14, EmployeeId = 1 },
+                new EmployeeManager { ManagerId = 14, EmployeeId = 2 },
+                new EmployeeManager { ManagerId = 14, EmployeeId = 3 },
+                new EmployeeManager { ManagerId = 14, EmployeeId = 15 }
+             );
 
 
 
