@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> UserManager
 
 
 <head>
@@ -97,17 +96,25 @@
       padding: 5px 0;
       font-size: 20px;
     }
+
+     .content {
+      margin-left: 200px; 
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
   <nav class="vertical-nav">
     <ul>
-      <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li>
-      <li><a href="#">Evaluation Form</a></li>
-      <li><a href="#">Out of Office Forms</a></li>
-      <li><a href="#">Equipment Management</a></li>
-      <li><a href="#">Clock In - Clock Out</a></li>
-      <li><a href="#">Office Hierarchy</a></li>
+      <li><a href="#" data-target="home">Home</a></li>
+      <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
+      <li><a href="#" data-target="office">Out of Office Forms</a></li>
+      <li><a href="#" data-target="equipment">Equipment Management</a></li>
+      <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
+      <li><a href="#" data-target="hierarchy">Office Hierarchy</a></li>
+      <li><a href="#" data-target="employee">Employee Management</a></li>
+      <li><a href="#" data-target="team">Team Management</a></li>
+      <li><a href="#" data-target="export">Data Export</a></li>
     </ul>
   </nav>
   <div class="top-card">
@@ -144,7 +151,9 @@
     </div>
   </div>
 
-
+    <div class="content" id="content">
+        <!--partials-->
+  </div>
 
    <script>
     function toggleDropdown() {
@@ -156,6 +165,28 @@
       }
     }
 
+      document.querySelectorAll('.vertical-nav a').forEach(item => {
+      item.addEventListener('click', event => {
+        event.preventDefault();
+        const target = event.target.dataset.target;
+        loadPartialView(target);
+      });
+    });
+
+    // Function to load partial view using AJAX
+    function loadPartialView(target) {
+      // You may want to add loading indicator here
+      const url = '@Url.Action("LoadPartialView", "Manager")?target=' + target;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Handle error here
+        });
+    }
   
   </script>
 </body>
