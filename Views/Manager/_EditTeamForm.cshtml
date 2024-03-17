@@ -1,0 +1,10 @@
+﻿@model VirtualOffice.Models.Team
+
+<form action="@Url.Action("UpdateTeam", "Manager")" method="post">
+    <input type="hidden" name="teamId" value="@Model.Id" />
+    <div>
+        <label for="teamName">Team Name:</label>
+        <input type="text" id="teamName" name="teamName" value="@Model.Name" />
+    </div>
+    <button type="submit">Update Team</button>
+</form>
