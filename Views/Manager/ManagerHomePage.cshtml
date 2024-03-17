@@ -1,5 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 
+@{
+    Layout = null;
+    Layout = "";
+ }
 
 <head>
   <meta charset="UTF-8">
@@ -97,10 +101,17 @@
       font-size: 20px;
     }
 
-     .content {
-      margin-left: 200px; 
-      padding: 20px;
-    }
+    .content {
+    margin-left: 280px;
+    margin-top: 110px;
+    padding: 20px;
+    width: calc(100% - 400px); /* Subtract the width of the vertical nav */
+    height: calc(100% - 150px); /* Subtract the height of the top card */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+    background-color: #fff; /* Set background color */
+    border-radius: 8px; /* Add border radius for a rounded look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
   </style>
 </head>
 <body>
@@ -152,10 +163,12 @@
   </div>
 
     <div class="content" id="content">
-        <!--partials-->
+        <!--partials se izgeneriraju ovdje-->
   </div>
 
    <script>
+
+
     function toggleDropdown() {
       var dropdown = document.getElementById("dropdown");
       if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -173,9 +186,7 @@
       });
     });
 
-    // Function to load partial view using AJAX
     function loadPartialView(target) {
-      // You may want to add loading indicator here
       const url = '@Url.Action("LoadPartialView", "Manager")?target=' + target;
       fetch(url)
         .then(response => response.text())
@@ -184,9 +195,10 @@
         })
         .catch(error => {
           console.error('Error:', error);
-          // Handle error here
         });
     }
-  
+
+       
+
   </script>
 </body>

@@ -19,6 +19,7 @@ namespace VirtualOffice.Controllers
             _dbContext = dbContext;
         }
 
+        //redirectanje do Manager/Employee ekrana
         public IActionResult Index()
         {
             if (User.Identity.IsAuthenticated)
@@ -29,18 +30,15 @@ namespace VirtualOffice.Controllers
 
                 if (isManager)
                 {
-                    // Redirect to the ManagerHomePage action of the ManagerController
                     return RedirectToAction("ManagerHomePage", "Manager");
                 }
                 else
                 {
-                    // Redirect to the EmployeeHomePage action of the EmployeeController
                     return RedirectToAction("EmployeeHomePage", "Employee");
                 }
             }
             else
             {
-                // If the user is not authenticated, display the default view
                 return View();
             }
         }

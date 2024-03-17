@@ -1,7 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<IdentityUser> UserManager
-
-
+@{
+    Layout = null; // Remove layout inheritance
+}
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,13 +91,14 @@
       font-size: 20px;
     }
 
-    .dropdown a {
+    .dropdown a, button {
       display: block;
       color: #fff;
       text-decoration: none;
       padding: 5px 0;
       font-size: 20px;
     }
+
   </style>
 </head>
 <body>
@@ -140,7 +142,12 @@
     <div class="dropdown" id="dropdown">
       <a href="#">Profile</a>
       <a href="#">Settings</a>
-      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
+      <form method="post" action="/Identity/Account/Logout?returnUrl=%2F%3Fpage%3D%252F">
+            <button type="submit">Logout</button>
+            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GyLmV4KFLdArRhzajXzKj5pK8-Q8iTNUcDOAQKXCTt2iX7hYPlWfzVstx66tJBv-GFtuBssjXOz-0Hpwq4W9ozjcP4DMq9kGpiKW_zGvpbhJAcv8A50Ob2hsbMyce1aoJTWBAKRJv3i6fjK4f7OS2cTwropgRy-P4CLtskhpF2lJMRd5aY4j0W9Z-Ba97OY4w">
+        </form>
+
+            
     </div>
   </div>
 
@@ -158,4 +165,5 @@
 
   
   </script>
+
 </body>
