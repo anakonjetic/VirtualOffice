@@ -186,6 +186,38 @@ namespace VirtualOffice.Migrations
                             SecurityStamp = "XGHG2H7ZFL7VBGKKCEK7F62YQH7JCJP7",
                             TwoFactorEnabled = false,
                             UserName = "ijelinic@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = "c74eba9f-b845-4a07-b524-16333e5d0a28",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a000153f-27b3-4f1a-9239-54a0da24b5ec",
+                            Email = "lradosev1@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "LRADOSEV1@TVZ.HR",
+                            NormalizedUserName = "LRADOSEV1@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAEI8AdUEzjlWIzWCDg9b1Pxts7gJRnbdF40Z2g85lHfejyCT+iNuffZfCRphOahvbWw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "6NMWXOKUSY6BAUYR5AQXNLMCAF3GS5F6",
+                            TwoFactorEnabled = false,
+                            UserName = "lradosev1@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = "938ea5fe-88c8-4662-9192-c3c668a7cb07",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f3cd1583-e393-40cc-8bdd-c31d0b94e9ca",
+                            Email = "lkranjcec@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "LKRANJCEC@TVZ.HR",
+                            NormalizedUserName = "LKRANJCEC@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAOqiEegzbkuyHFSWeQmTidH+MrCH86ckhw1q9ellMBVEL7LgaH+6OpeCiX+Dk7AXw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "UQGAQP2JVWKWF2FF4P44UT5WLZDAZCSX",
+                            TwoFactorEnabled = false,
+                            UserName = "lkranjcec@tvz.hr"
                         });
                 });
 

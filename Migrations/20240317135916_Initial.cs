@@ -393,6 +393,18 @@ namespace VirtualOffice.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[,]
+                {
+                    { "1e95f075-9cbd-4252-8a25-faeb03e0449e", 0, "4f6b5901-3484-4193-8019-eda79b7bb7c4", "akonjetic@tvz.hr", false, true, null, "AKONJETIC@TVZ.HR", "AKONJETIC@TVZ.HR", "AQAAAAEAACcQAAAAEHdoVZxob+hAFS7k94sF73hok2cbxnwffaz2Lh64SLJjSL4RXBfMEOhRYa4FfNRbgw==", null, false, "DLH4EV4JMJXZHL7E26I56PEVVUUTTIHP", false, "akonjetic@tvz.hr" },
+                    { "938ea5fe-88c8-4662-9192-c3c668a7cb07", 0, "f3cd1583-e393-40cc-8bdd-c31d0b94e9ca", "lkranjcec@tvz.hr", false, true, null, "LKRANJCEC@TVZ.HR", "LKRANJCEC@TVZ.HR", "AQAAAAEAACcQAAAAEAOqiEegzbkuyHFSWeQmTidH+MrCH86ckhw1q9ellMBVEL7LgaH+6OpeCiX+Dk7AXw==", null, false, "UQGAQP2JVWKWF2FF4P44UT5WLZDAZCSX", false, "lkranjcec@tvz.hr" },
+                    { "9ad46335-32b4-492d-8592-4379e0f2f108", 0, "24c9aa1d-9f2a-46a0-86e1-a243019622b6", "mtkalec@tvz.hr", false, true, null, "MTKALEC@TVZ.HR", "MTKALEC@TVZ.HR", "AQAAAAEAACcQAAAAECk7W8s/aNRCGsRYsTy4OFTL6m6UtZ24akpO+00ixeCfe5jOnRa2RaUgTCgdLqE+wQ==", null, false, "2P3O5IYYVMYAJPTP4SJBNZCKWICKIUFJ", false, "mtkalec@tvz.hr" },
+                    { "c74eba9f-b845-4a07-b524-16333e5d0a28", 0, "a000153f-27b3-4f1a-9239-54a0da24b5ec", "lradosev1@tvz.hr", false, true, null, "LRADOSEV1@TVZ.HR", "LRADOSEV1@TVZ.HR", "AQAAAAEAACcQAAAAEI8AdUEzjlWIzWCDg9b1Pxts7gJRnbdF40Z2g85lHfejyCT+iNuffZfCRphOahvbWw==", null, false, "6NMWXOKUSY6BAUYR5AQXNLMCAF3GS5F6", false, "lradosev1@tvz.hr" },
+                    { "f0e2bb7d-9ef4-421d-ad33-850f079c9507", 0, "a097299b-84ec-4ac4-a12e-f29c46f83610", "ijelinic@tvz.hr", false, true, null, "IJELINIC@TVZ.HR", "IJELINIC@TVZ.HR", "AQAAAAEAACcQAAAAEDWL7FHTTTSozek+8JSsLrZVKVgj1weRDzOIbyHFxCdt2ql3B/aV21aAW36GbV3wRw==", null, false, "XGHG2H7ZFL7VBGKKCEK7F62YQH7JCJP7", false, "ijelinic@tvz.hr" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Equipment",
                 columns: new[] { "Id", "CategoryId", "EquipmentCategoryId", "Name" },
                 values: new object[,]
@@ -432,17 +444,45 @@ namespace VirtualOffice.Migrations
             migrationBuilder.InsertData(
                 table: "Employee",
                 columns: new[] { "Id", "DateOfBirth", "EquipmentId", "FirstName", "LastName", "RemainingDaysOff", "SickLeaveDaysUsed", "TeamId", "UserId" },
-                values: new object[] { 1, new DateTime(2000, 8, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#2#3", "Ana", "Konjetić", 20, 5, 1, "9466791b-d6f5-4aa3-8ae7-b4372e003c59" });
+                values: new object[,]
+                {
+                    { 1, new DateTime(2000, 8, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#2#3", "Ana", "Konjetić", 20, 5, 1, "akonjetic@tvz.hr" },
+                    { 2, new DateTime(1997, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "4#5#6", "Marko", "Tkalec", 15, 2, 2, "mtkalec@tvz.hr" },
+                    { 3, new DateTime(2000, 6, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#3#6", "Ivan", "Jelinić", 15, 2, 3, "ijelinic@tvz.hr" },
+                    { 4, new DateTime(1985, 9, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#4#5", "Marina", "Marković", 17, 2, 1, "" },
+                    { 5, new DateTime(1995, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "2#3#6", "Ivan", "Babić", 19, 3, 2, "" },
+                    { 6, new DateTime(1993, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#3#5", "Ana", "Knežević", 15, 2, 3, "" },
+                    { 7, new DateTime(1987, 4, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), "2#4#6", "Petar", "Petrović", 18, 3, 1, "" },
+                    { 8, new DateTime(1991, 7, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "3#5#6", "Martina", "Šimunović", 16, 2, 2, "" },
+                    { 9, new DateTime(1989, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#4#5", "Antonio", "Vuković", 20, 1, 3, "" },
+                    { 10, new DateTime(1994, 10, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), "2#3#6", "Jelena", "Matković", 17, 2, 1, "" },
+                    { 11, new DateTime(1988, 8, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), "2#4#6", "Ivana", "Horvat", 16, 3, 2, "" },
+                    { 12, new DateTime(1992, 3, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), "3#5#6", "Luka", "Kovač", 20, 1, 3, "" },
+                    { 13, new DateTime(1990, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#2#3", "Ante", "Kovačić", 18, 4, 1, "" },
+                    { 14, new DateTime(2001, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "4#5#6", "Lucija", "Kranjčec", 25, 1, 5, "lkranjcec@tvz.hr" },
+                    { 15, new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#2#3", "Luka", "Radošević", 12, 10, 4, "lradosev1@tvz.hr" }
+                });
 
             migrationBuilder.InsertData(
-                table: "Employee",
-                columns: new[] { "Id", "DateOfBirth", "EquipmentId", "FirstName", "LastName", "RemainingDaysOff", "SickLeaveDaysUsed", "TeamId", "UserId" },
-                values: new object[] { 2, new DateTime(1997, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "4#5#6", "Marko", "Tkalec", 15, 2, 2, "a3128091-0f41-4abe-a532-5cc1fdb40c0a" });
-
-            migrationBuilder.InsertData(
-                table: "Employee",
-                columns: new[] { "Id", "DateOfBirth", "EquipmentId", "FirstName", "LastName", "RemainingDaysOff", "SickLeaveDaysUsed", "TeamId", "UserId" },
-                values: new object[] { 3, new DateTime(2000, 6, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), "1#3#6", "Ivan", "Jelinić", 15, 2, 3, "aa004dd5-c419-449e-a41a-abf5e5d3c1f1" });
+                table: "EmployeeManager",
+                columns: new[] { "EmployeeId", "ManagerId" },
+                values: new object[,]
+                {
+                    { 4, 1 },
+                    { 7, 1 },
+                    { 10, 1 },
+                    { 13, 1 },
+                    { 5, 2 },
+                    { 8, 2 },
+                    { 11, 2 },
+                    { 6, 3 },
+                    { 9, 3 },
+                    { 12, 3 },
+                    { 1, 14 },
+                    { 2, 14 },
+                    { 3, 14 },
+                    { 15, 14 }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
