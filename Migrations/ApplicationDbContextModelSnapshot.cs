@@ -137,6 +137,88 @@ namespace VirtualOffice.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1e95f075-9cbd-4252-8a25-faeb03e0449e",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "4f6b5901-3484-4193-8019-eda79b7bb7c4",
+                            Email = "akonjetic@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "AKONJETIC@TVZ.HR",
+                            NormalizedUserName = "AKONJETIC@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHdoVZxob+hAFS7k94sF73hok2cbxnwffaz2Lh64SLJjSL4RXBfMEOhRYa4FfNRbgw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "DLH4EV4JMJXZHL7E26I56PEVVUUTTIHP",
+                            TwoFactorEnabled = false,
+                            UserName = "akonjetic@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = "9ad46335-32b4-492d-8592-4379e0f2f108",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "24c9aa1d-9f2a-46a0-86e1-a243019622b6",
+                            Email = "mtkalec@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "MTKALEC@TVZ.HR",
+                            NormalizedUserName = "MTKALEC@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAECk7W8s/aNRCGsRYsTy4OFTL6m6UtZ24akpO+00ixeCfe5jOnRa2RaUgTCgdLqE+wQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "2P3O5IYYVMYAJPTP4SJBNZCKWICKIUFJ",
+                            TwoFactorEnabled = false,
+                            UserName = "mtkalec@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = "f0e2bb7d-9ef4-421d-ad33-850f079c9507",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a097299b-84ec-4ac4-a12e-f29c46f83610",
+                            Email = "ijelinic@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "IJELINIC@TVZ.HR",
+                            NormalizedUserName = "IJELINIC@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAEDWL7FHTTTSozek+8JSsLrZVKVgj1weRDzOIbyHFxCdt2ql3B/aV21aAW36GbV3wRw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "XGHG2H7ZFL7VBGKKCEK7F62YQH7JCJP7",
+                            TwoFactorEnabled = false,
+                            UserName = "ijelinic@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = "c74eba9f-b845-4a07-b524-16333e5d0a28",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a000153f-27b3-4f1a-9239-54a0da24b5ec",
+                            Email = "lradosev1@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "LRADOSEV1@TVZ.HR",
+                            NormalizedUserName = "LRADOSEV1@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAEI8AdUEzjlWIzWCDg9b1Pxts7gJRnbdF40Z2g85lHfejyCT+iNuffZfCRphOahvbWw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "6NMWXOKUSY6BAUYR5AQXNLMCAF3GS5F6",
+                            TwoFactorEnabled = false,
+                            UserName = "lradosev1@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = "938ea5fe-88c8-4662-9192-c3c668a7cb07",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f3cd1583-e393-40cc-8bdd-c31d0b94e9ca",
+                            Email = "lkranjcec@tvz.hr",
+                            EmailConfirmed = false,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "LKRANJCEC@TVZ.HR",
+                            NormalizedUserName = "LKRANJCEC@TVZ.HR",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAOqiEegzbkuyHFSWeQmTidH+MrCH86ckhw1q9ellMBVEL7LgaH+6OpeCiX+Dk7AXw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "UQGAQP2JVWKWF2FF4P44UT5WLZDAZCSX",
+                            TwoFactorEnabled = false,
+                            UserName = "lkranjcec@tvz.hr"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -304,7 +386,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 20,
                             SickLeaveDaysUsed = 5,
                             TeamId = 1,
-                            UserId = "1e95f075-9cbd-4252-8a25-faeb03e0449e"
+                            UserId = "akonjetic@tvz.hr"
                         },
                         new
                         {
@@ -316,7 +398,7 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 15,
                             SickLeaveDaysUsed = 2,
                             TeamId = 2,
-                            UserId = "9ad46335-32b4-492d-8592-4379e0f2f108"
+                            UserId = "mtkalec@tvz.hr"
                         },
                         new
                         {
@@ -328,7 +410,151 @@ namespace VirtualOffice.Migrations
                             RemainingDaysOff = 15,
                             SickLeaveDaysUsed = 2,
                             TeamId = 3,
-                            UserId = "f0e2bb7d-9ef4-421d-ad33-850f079c9507"
+                            UserId = "ijelinic@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DateOfBirth = new DateTime(1985, 9, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "1#4#5",
+                            FirstName = "Marina",
+                            LastName = "Marković",
+                            RemainingDaysOff = 17,
+                            SickLeaveDaysUsed = 2,
+                            TeamId = 1,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DateOfBirth = new DateTime(1995, 6, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "2#3#6",
+                            FirstName = "Ivan",
+                            LastName = "Babić",
+                            RemainingDaysOff = 19,
+                            SickLeaveDaysUsed = 3,
+                            TeamId = 2,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DateOfBirth = new DateTime(1993, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "1#3#5",
+                            FirstName = "Ana",
+                            LastName = "Knežević",
+                            RemainingDaysOff = 15,
+                            SickLeaveDaysUsed = 2,
+                            TeamId = 3,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DateOfBirth = new DateTime(1987, 4, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "2#4#6",
+                            FirstName = "Petar",
+                            LastName = "Petrović",
+                            RemainingDaysOff = 18,
+                            SickLeaveDaysUsed = 3,
+                            TeamId = 1,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DateOfBirth = new DateTime(1991, 7, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "3#5#6",
+                            FirstName = "Martina",
+                            LastName = "Šimunović",
+                            RemainingDaysOff = 16,
+                            SickLeaveDaysUsed = 2,
+                            TeamId = 2,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DateOfBirth = new DateTime(1989, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "1#4#5",
+                            FirstName = "Antonio",
+                            LastName = "Vuković",
+                            RemainingDaysOff = 20,
+                            SickLeaveDaysUsed = 1,
+                            TeamId = 3,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DateOfBirth = new DateTime(1994, 10, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "2#3#6",
+                            FirstName = "Jelena",
+                            LastName = "Matković",
+                            RemainingDaysOff = 17,
+                            SickLeaveDaysUsed = 2,
+                            TeamId = 1,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DateOfBirth = new DateTime(1988, 8, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "2#4#6",
+                            FirstName = "Ivana",
+                            LastName = "Horvat",
+                            RemainingDaysOff = 16,
+                            SickLeaveDaysUsed = 3,
+                            TeamId = 2,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DateOfBirth = new DateTime(1992, 3, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "3#5#6",
+                            FirstName = "Luka",
+                            LastName = "Kovač",
+                            RemainingDaysOff = 20,
+                            SickLeaveDaysUsed = 1,
+                            TeamId = 3,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DateOfBirth = new DateTime(1990, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "1#2#3",
+                            FirstName = "Ante",
+                            LastName = "Kovačić",
+                            RemainingDaysOff = 18,
+                            SickLeaveDaysUsed = 4,
+                            TeamId = 1,
+                            UserId = ""
+                        },
+                        new
+                        {
+                            Id = 14,
+                            DateOfBirth = new DateTime(2001, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "4#5#6",
+                            FirstName = "Lucija",
+                            LastName = "Kranjčec",
+                            RemainingDaysOff = 25,
+                            SickLeaveDaysUsed = 1,
+                            TeamId = 5,
+                            UserId = "lkranjcec@tvz.hr"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            DateOfBirth = new DateTime(2000, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EquipmentId = "1#2#3",
+                            FirstName = "Luka",
+                            LastName = "Radošević",
+                            RemainingDaysOff = 12,
+                            SickLeaveDaysUsed = 10,
+                            TeamId = 4,
+                            UserId = "lradosev1@tvz.hr"
                         });
                 });
 
@@ -345,6 +571,78 @@ namespace VirtualOffice.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("EmployeeManager");
+
+                    b.HasData(
+                        new
+                        {
+                            ManagerId = 1,
+                            EmployeeId = 4
+                        },
+                        new
+                        {
+                            ManagerId = 2,
+                            EmployeeId = 5
+                        },
+                        new
+                        {
+                            ManagerId = 3,
+                            EmployeeId = 6
+                        },
+                        new
+                        {
+                            ManagerId = 1,
+                            EmployeeId = 7
+                        },
+                        new
+                        {
+                            ManagerId = 2,
+                            EmployeeId = 8
+                        },
+                        new
+                        {
+                            ManagerId = 3,
+                            EmployeeId = 9
+                        },
+                        new
+                        {
+                            ManagerId = 1,
+                            EmployeeId = 10
+                        },
+                        new
+                        {
+                            ManagerId = 2,
+                            EmployeeId = 11
+                        },
+                        new
+                        {
+                            ManagerId = 3,
+                            EmployeeId = 12
+                        },
+                        new
+                        {
+                            ManagerId = 1,
+                            EmployeeId = 13
+                        },
+                        new
+                        {
+                            ManagerId = 14,
+                            EmployeeId = 1
+                        },
+                        new
+                        {
+                            ManagerId = 14,
+                            EmployeeId = 2
+                        },
+                        new
+                        {
+                            ManagerId = 14,
+                            EmployeeId = 3
+                        },
+                        new
+                        {
+                            ManagerId = 14,
+                            EmployeeId = 15
+                        });
                 });
 
             modelBuilder.Entity("VirtualOffice.Models.Equipment", b =>

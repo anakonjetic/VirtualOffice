@@ -1,9 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@* @inject UserManager<IdentityUser> UserManager *@
+
 @{
-    Layout = null; // Remove layout inheritance
+    Layout = null;
     Layout = "";
-}
+ }
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -93,7 +94,7 @@
       font-size: 20px;
     }
 
-    .dropdown a, button {
+    .dropdown a {
       display: block;
       color: #fff;
       text-decoration: none;
@@ -101,7 +102,7 @@
       font-size: 20px;
     }
 
-   .content2 {
+    .content {
     margin-left: 280px;
     margin-top: 110px;
     padding: 20px;
@@ -112,29 +113,22 @@
     border-radius: 8px; /* Add border radius for a rounded look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
 }
-
   </style>
 </head>
 <body>
-@*   <nav class="vertical-nav">
+  <nav class="vertical-nav">
     <ul>
       <li><a href="#" data-target="home">Home</a></li>
       <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
-      <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
+      <li><a href="#" data-target="office">Out of Office Forms</a></li>
       <li><a href="#" data-target="equipment">Equipment Management</a></li>
-      <li><a href="#" data-target="clockIn">Clock In - Clock Out</a></li>
+      <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
+      <li><a href="#" data-target="hierarchy">Office Hierarchy</a></li>
+      <li><a href="#" data-target="employee">Employee Management</a></li>
+      <li><a href="#" data-target="team">Team Management</a></li>
+      <li><a href="#" data-target="export">Data Export</a></li>
     </ul>
-  </nav> *@
-    <nav class="vertical-nav">
-        <ul>
-            @* <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li> *@
-            <li><a href="#" data-target="home">Home</a></li>
-            <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
-            <li><a href="#" data-target="office">Out of Office Forms</a></li>
-            <li><a href="#" data-target="equipment">Equipment Management</a></li>
-            <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
-        </ul>
-    </nav>
+  </nav>
   <div class="top-card">
     @{
         string username = "";
@@ -163,16 +157,15 @@
         }
     }@userId</div>
     <div class="dropdown" id="dropdown">
-        <a href="#">Profile</a>
-        <a href="#">Settings</a>
-        <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
   </div>
 
-       <div class="content2" id="content2">
+    <div class="content" id="content">
         <!--partials se izgeneriraju ovdje-->
   </div>
-
 
    <script>
     function toggleDropdown() {
@@ -184,17 +177,57 @@
       }
     }
 
-    document.querySelectorAll('.vertical-nav a').forEach(item => {
-        item.addEventListener('click', event => {
-            event.preventDefault();
-            const target = event.target.dataset.target;
-            loadPartialViewEmployee(target);
-        });
+      document.querySelectorAll('.vertical-nav a').forEach(item => {
+      item.addEventListener('click', event => {
+        event.preventDefault();
+        const target = event.target.dataset.target;
+        loadPartialView(target);
+      });
     });
+
+    function loadPartialView(target) {
+      const url = '@Url.Action("LoadPartialView", "Manager")?target=' + target;
+            //console.log('Generated URL:', url);
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function exportToExcel() {
+        console.log('Exporting to Excel...');
+        $.ajax({
+            url: '/Manager/ExportToExcel', // URL to your export action
+            type: 'GET',
+            xhrFields: {
+                responseType: 'blob' // Set the response type to blob
+            },
+            success: function (response) {
+                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'Employees.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            },
+            error: function (xhr, status, error) {
+                alert('Export failed: ' + error);
+            }
+        });
+        // Prevent the default behavior of the anchor tag
+        return false;
+    }
 
     function clockIn() {
         $.ajax({
-            url: '/Employee/ClockIn',
+            url: '/Manager/ClockIn',
             type: 'POST',
             success: function (response) {
                 if (response.success) {
@@ -213,7 +246,7 @@
 
     function clockOut() {
         $.ajax({
-            url: '/Employee/ClockOut',
+            url: '/Manager/ClockOut',
             type: 'POST',
             success: function (response) {
                 if (response.success) {
@@ -249,18 +282,5 @@
         // Display error message to the user
         $('#clockDisplay').text(message);
     }
-    function loadPartialViewEmployee(target) {
-      const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
-      fetch(url)
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById('content2').innerHTML = data;
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-    }
-  
   </script>
-
 </body>
