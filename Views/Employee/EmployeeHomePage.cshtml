@@ -1,11 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> UserManager
+@* @inject UserManager<IdentityUser> UserManager *@
 @{
     Layout = null; // Remove layout inheritance
+    Layout = "";
 }
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <title>Vertical Navigation</title>
   <style>
     body {
@@ -102,7 +104,7 @@
   </style>
 </head>
 <body>
-  <nav class="vertical-nav">
+@*   <nav class="vertical-nav">
     <ul>
       <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li>
       <li><a href="#">Evaluation Form</a></li>
@@ -111,7 +113,18 @@
       <li><a href="#">Clock In - Clock Out</a></li>
       <li><a href="#">Office Hierarchy</a></li>
     </ul>
-  </nav>
+  </nav> *@
+    <nav class="vertical-nav">
+        <ul>
+            @* <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li> *@
+            <li><a href="#" data-target="home">Home</a></li>
+            <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
+            <li><a href="#" data-target="office">Out of Office Forms</a></li>
+            <li><a href="#" data-target="equipment">Equipment Management</a></li>
+            <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
+            <li><a href="#" data-target="hierarchy">Office Hierarchy</a></li>
+        </ul>
+    </nav>
   <div class="top-card">
     @{
         string username = "";
@@ -140,18 +153,15 @@
         }
     }@userId</div>
     <div class="dropdown" id="dropdown">
-      <a href="#">Profile</a>
-      <a href="#">Settings</a>
-      <form method="post" action="/Identity/Account/Logout?returnUrl=%2F%3Fpage%3D%252F">
-            <button type="submit">Logout</button>
-            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GyLmV4KFLdArRhzajXzKj5pK8-Q8iTNUcDOAQKXCTt2iX7hYPlWfzVstx66tJBv-GFtuBssjXOz-0Hpwq4W9ozjcP4DMq9kGpiKW_zGvpbhJAcv8A50Ob2hsbMyce1aoJTWBAKRJv3i6fjK4f7OS2cTwropgRy-P4CLtskhpF2lJMRd5aY4j0W9Z-Ba97OY4w">
-        </form>
-
-            
+        <a href="#">Profile</a>
+        <a href="#">Settings</a>
+        <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
   </div>
 
-
+    <div class="content" id="content">
+        <!--partials se izgeneriraju ovdje-->
+    </div>
 
    <script>
     function toggleDropdown() {
@@ -163,6 +173,90 @@
       }
     }
 
+    document.querySelectorAll('.vertical-nav a').forEach(item => {
+        item.addEventListener('click', event => {
+            event.preventDefault();
+            const target = event.target.dataset.target;
+            loadPartialView(target);
+        });
+    });
+
+    function loadPartialView(target) {
+        console.log('Target:', target); // Log the target value
+        const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
+        console.log('Generated URL:', url); // Log the generated URL
+        fetch(url)
+            .then(response => {
+                console.log('Response:', response); // Log the response object
+                return response.text();
+            })
+            .then(data => {
+                console.log('Received data:', data); // Log the received data
+                document.getElementById('content').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error:', error); // Log any errors that occur
+            });
+    }
+
+
+    function clockIn() {
+        $.ajax({
+            url: '/Employee/ClockIn',
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    var clockInTime = new Date();
+                    var formattedClockInTime = formatDate(clockInTime);
+                    $('#clockDisplay').text('Clock In Time: ' + formattedClockInTime);
+                } else {
+                    showError(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                showError('Clock in operation failed: ' + error);
+            }
+        });
+    }
+
+    function clockOut() {
+        $.ajax({
+            url: '/Employee/ClockOut',
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    var clockOutTime = new Date();
+                    var formattedClockOutTime = formatDate(clockOutTime);
+                    var message = 'Clock Out Time: ' + formattedClockOutTime;
+                    if (response.timeWorked) {
+                        message += ' | Time Worked: ' + response.timeWorked;
+                    }
+                    $('#clockDisplay').text(message);
+                } else {
+                    showError(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                showError('Clock out operation failed: ' + error);
+            }
+        });
+    }
+
+    function formatDate(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var seconds = date.getSeconds();
+        return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+    }
+
+    function pad(num) {
+        return (num < 10 ? '0' : '') + num;
+    }
+
+    function showError(message) {
+        // Display error message to the user
+        $('#clockDisplay').text(message);
+    }
   
   </script>
 
