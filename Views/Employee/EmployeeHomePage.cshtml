@@ -106,12 +106,11 @@
 <body>
 @*   <nav class="vertical-nav">
     <ul>
-      <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li>
-      <li><a href="#">Evaluation Form</a></li>
-      <li><a href="#">Out of Office Forms</a></li>
-      <li><a href="#">Equipment Management</a></li>
-      <li><a href="#">Clock In - Clock Out</a></li>
-      <li><a href="#">Office Hierarchy</a></li>
+      <li><a href="#" data-target="home">Home</a></li>
+      <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
+      <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
+      <li><a href="#" data-target="equipment">Equipment Management</a></li>
+      <li><a href="#" data-target="clockIn">Clock In - Clock Out</a></li>
     </ul>
   </nav> *@
     <nav class="vertical-nav">
@@ -159,9 +158,10 @@
     </div>
   </div>
 
-    <div class="content" id="content">
+
+  <div class="contentEmp" id="content">
         <!--partials se izgeneriraju ovdje-->
-    </div>
+  </div>
 
    <script>
     function toggleDropdown() {
@@ -180,25 +180,6 @@
             loadPartialView(target);
         });
     });
-
-    function loadPartialView(target) {
-        console.log('Target:', target); // Log the target value
-        const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
-        console.log('Generated URL:', url); // Log the generated URL
-        fetch(url)
-            .then(response => {
-                console.log('Response:', response); // Log the response object
-                return response.text();
-            })
-            .then(data => {
-                console.log('Received data:', data); // Log the received data
-                document.getElementById('content').innerHTML = data;
-            })
-            .catch(error => {
-                console.error('Error:', error); // Log any errors that occur
-            });
-    }
-
 
     function clockIn() {
         $.ajax({
@@ -256,6 +237,17 @@
     function showError(message) {
         // Display error message to the user
         $('#clockDisplay').text(message);
+    }
+    function loadPartialView(target) {
+      const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('contentEmp').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     }
   
   </script>

@@ -24,17 +24,24 @@ namespace VirtualOffice.Controllers
         public IActionResult LoadPartialView(string target)
         {
 
+
             Console.WriteLine("Target received in LoadPartialView action: " + target);
+
+           
             switch (target)
             {
                 case "home":
                     return PartialView("_EmployeeHome");
-                case "clock":
-                    return PartialView("_EmployeeClockIn");
+                case "clockIn":
+                    return PartialView("_EmployeeClockIn"); 
+                case "evaluation":
+                    return PartialView("_EmployeeEvaluation");
+                case "equipment":
+                    return PartialView("_EmployeeEquipment");
+                case "outOfOffice":
+                    return PartialView("_EmployeeOutOfOffice");
 
                 default:
-                    // Debug line to print when the target is not recognized
-                    Console.WriteLine("Target not recognized: " + target);
                     return NotFound();
             }
         }
@@ -102,4 +109,6 @@ namespace VirtualOffice.Controllers
             return Json(new { success = true, timeWorked = timeWorked.ToString(@"hh\:mm\:ss") });
         }
     }
+
+
 }
