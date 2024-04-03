@@ -50,36 +50,5 @@
         <button id="clockOutButton" onclick="clockOut()" class="clock-out">Clock Out</button>
         <div id="clockDisplay" class="clock-display"></div>
     </div>
-
-    <table id="employeeTable">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Clock In Time</th>
-                <th>Clock Out Time</th>
-                <th>Time Working</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var clockIn in Model.ClockIns)
-            {
-                <tr>
-                    <td>@clockIn.EmployeeId</td>
-                    <td>@clockIn.Employee?.FirstName</td>
-                    <td>@clockIn.Employee?.LastName</td>
-                    <td>@clockIn.ClockInTime</td>
-                    <td>@clockIn.ClockOutTime</td>
-                    @{
-                        TimeSpan timeWorked = clockIn.ClockOutTime - clockIn.ClockInTime;
-                        string formattedTimeWorked = timeWorked.ToString(@"hh\:mm\:ss");
-                    }
-                    <td>@formattedTimeWorked</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
 </body>
 </html>
