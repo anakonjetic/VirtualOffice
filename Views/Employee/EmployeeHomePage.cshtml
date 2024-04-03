@@ -101,6 +101,18 @@
       font-size: 20px;
     }
 
+   .content2 {
+    margin-left: 280px;
+    margin-top: 110px;
+    padding: 20px;
+    width: calc(100% - 400px); /* Subtract the width of the vertical nav */
+    height: calc(100% - 150px); /* Subtract the height of the top card */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+    background-color: #fff; /* Set background color */
+    border-radius: 8px; /* Add border radius for a rounded look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
+
   </style>
 </head>
 <body>
@@ -121,7 +133,6 @@
             <li><a href="#" data-target="office">Out of Office Forms</a></li>
             <li><a href="#" data-target="equipment">Equipment Management</a></li>
             <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
-            <li><a href="#" data-target="hierarchy">Office Hierarchy</a></li>
         </ul>
     </nav>
   <div class="top-card">
@@ -158,10 +169,10 @@
     </div>
   </div>
 
-
-  <div class="contentEmp" id="content">
+       <div class="content2" id="content2">
         <!--partials se izgeneriraju ovdje-->
   </div>
+
 
    <script>
     function toggleDropdown() {
@@ -177,7 +188,7 @@
         item.addEventListener('click', event => {
             event.preventDefault();
             const target = event.target.dataset.target;
-            loadPartialView(target);
+            loadPartialViewEmployee(target);
         });
     });
 
@@ -238,12 +249,12 @@
         // Display error message to the user
         $('#clockDisplay').text(message);
     }
-    function loadPartialView(target) {
+    function loadPartialViewEmployee(target) {
       const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
       fetch(url)
         .then(response => response.text())
         .then(data => {
-          document.getElementById('contentEmp').innerHTML = data;
+          document.getElementById('content2').innerHTML = data;
         })
         .catch(error => {
           console.error('Error:', error);
