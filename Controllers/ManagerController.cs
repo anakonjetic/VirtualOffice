@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using System.Diagnostics;
 using VirtualOffice.Data;
 using VirtualOffice.Models;
 
@@ -94,7 +95,7 @@ namespace VirtualOffice.Controllers
                     return PartialView("_ManagerDataExport", dataExport);
 
                 default:
-                    return NotFound();
+                    return PartialView("_ManagerHome");
             }
         }
 
@@ -102,6 +103,7 @@ namespace VirtualOffice.Controllers
         {
             return PartialView("_TeamSummary", teamId);
         }
+
 
         // POST: /Manager/ClockIn
         [HttpPost]
@@ -226,6 +228,28 @@ namespace VirtualOffice.Controllers
                 // Return the Excel file
                 return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Employees.xlsx");
             }
+        }
+
+
+        public IActionResult EditTeam(int teamId)
+        {
+            var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
+
+            return PartialView("_EditTeamForm", team);
+        }
+
+        public async Task<IActionResult> SaveTeam(int id)
+        {
+            var team = this._dbContext.Team.Single(d => d.Id == id);
+            var ok = await this.TryUpdateModelAsync(team);
+
+            if (ok && this.ModelState.IsValid)
+            {
+                this._dbContext.SaveChanges();
+                return View("ManagerHomePage", "team");
+            }
+
+            return View();
         }
 
 

@@ -35,24 +35,40 @@
             text-decoration: none;
         }
 
+        /* Hide the input initially */
+        .edit-form {
+            display: none;
+        }
+
+        .edit-toggle:checked + .edit-link + .edit-form {
+            display: block;
+        }
+
+        /* Save button styles */
+        .save-btn {
+            margin-top: 10px;
+        }
     </style>
 </head>
+
 <body>
     <div class="card-container">
         @foreach (var team in Model.TeamList)
         {
-            <a href="@Url.Action("TeamSummary", "Manager", new { teamId = team.Id })" class="team-card">
+            <div class="team-card">
                 <h4>@team.Name</h4>
                 <p>Team ID: @team.Id</p>
                 @if (Model.IntList.Contains(team.Id))
                 {
-                    <p href="@Url.Action("EditTeam", "Manager", new { teamId = team.Id })"><!--<a href="@Url.Action("EditTeam", "Manager", new { teamId = team.Id })" class="team-link">-->Edit</p>
+                  <a href="#" onclick="loadEditView(@team.Id)">[edit]</a>
+
+
                 }
                 else
                 {
                     <p>No permission</p>
                 }
-            </a>
+            </div>
         }
     </div>
 </body>

@@ -3,7 +3,10 @@
 @{
     Layout = null;
     Layout = "";
+    
  }
+
+ @model string
 
 <head>
   <meta charset="UTF-8">
@@ -112,6 +115,8 @@
     background-color: #fff; /* Set background color */
     border-radius: 8px; /* Add border radius for a rounded look */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+
+    
 }
   </style>
 </head>
@@ -167,7 +172,19 @@
         <!--partials se izgeneriraju ovdje-->
   </div>
 
+
+
    <script>
+     
+       document.addEventListener("DOMContentLoaded", function () {
+        // Load partial view if the model string is not null
+        var modelString = '@Model';
+        if (modelString.trim() !== '') {
+            loadPartialView(modelString);
+        }
+    });
+
+
     function toggleDropdown() {
       var dropdown = document.getElementById("dropdown");
       if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -197,6 +214,21 @@
           console.error('Error:', error);
         });
     }
+
+    function loadEditView(teamId) {
+      const url = '@Url.Action("EditTeam", "Manager")?teamId=' + teamId;
+            //console.log('Generated URL:', url);
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+
 
     function exportToExcel() {
         console.log('Exporting to Excel...');
@@ -282,5 +314,8 @@
         // Display error message to the user
         $('#clockDisplay').text(message);
     }
+
+      
+
   </script>
 </body>
