@@ -294,6 +294,21 @@
         });
     }
     //loadanje filter team partiala u content div i logika triggeranja filter funkc --end
+
+    //loadanje create team partiala u content div--start
+
+    function createTeam() {
+      const url = '@Url.Action("TeamCreate", "Manager")?teamId=' + null;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje create team partiala u content div--end
    
     function exportToExcel() {
         console.log('Exporting to Excel...');

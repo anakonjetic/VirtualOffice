@@ -292,69 +292,95 @@ namespace VirtualOffice.Controllers
         public IActionResult TeamCreate()
         {
             var managers = _dbContext.Employee.ToList();
-            var employees = _dbContext.Employee.ToList();
 
             ViewData["Managers"] = managers;
-            ViewData["Employees"] = employees;
 
-            return PartialView("_EditTeamForm");
+            return PartialView("_TeamCreate", null);
         }
 
         public IActionResult SaveTeam(int id)
         {
-            var team = _dbContext.Team
-                   .Include(t => t.Employee)
-                   .FirstOrDefault(t => t.Id == id);
+            Team team;
 
-            var teamName = Request.Form["Name"];
-            team.Name = teamName;
+            if (id == 0) {
+                team = new Team();
 
-            var selectedManagerId = int.Parse(Request.Form["Employee"]);
+                var teamName = Request.Form["Name"];
+                team.Name = teamName;               
 
-            var previousManagerId = _dbContext.Employee
-                    .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
-                    .Select(e => e.Id)
-                    .SingleOrDefault();
+                var selectedManagerId = int.Parse(Request.Form["Employee"]);
 
-            if (selectedManagerId != 0)
-            {
-                if (previousManagerId != null && previousManagerId != selectedManagerId)
+                var teamEmployees = new List<Employee>();
+
+                team.Employee = teamEmployees;
+
+                var employeeManager = new EmployeeManager
                 {
-                    var employeesToRemove = _dbContext.EmployeeManager
-                        .Where(em => em.ManagerId == previousManagerId && _dbContext.Employee.Any(e => e.Id == em.EmployeeId && e.TeamId == team.Id ))
-                        .ToList();
+                    ManagerId = selectedManagerId,
+                    EmployeeId = selectedManagerId
+                };
 
-                    _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
+                _dbContext.Team.Add(team);
+                _dbContext.EmployeeManager.Add(employeeManager);
 
-                    var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
+                _dbContext.EmployeeManager.Add(employeeManager);
 
+            }
+            else
+            {
+                team = _dbContext.Team
+                       .Include(t => t.Employee)
+                       .FirstOrDefault(t => t.Id == id);
 
-                    var employeeManagers = new List<EmployeeManager>();
+                var teamName = Request.Form["Name"];
+                team.Name = teamName;
 
-                    foreach (var employee in teamEmployees)
+                var selectedManagerId = int.Parse(Request.Form["Employee"]);
+
+                var previousManagerId = _dbContext.Employee
+                        .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                        .Select(e => e.Id)
+                        .SingleOrDefault();
+
+                if (selectedManagerId != 0)
+                {
+                    if (previousManagerId != null && previousManagerId != selectedManagerId)
                     {
-                        if (employee.Id != selectedManagerId)
+                        var employeesToRemove = _dbContext.EmployeeManager
+                            .Where(em => em.ManagerId == previousManagerId && _dbContext.Employee.Any(e => e.Id == em.EmployeeId && e.TeamId == team.Id))
+                            .ToList();
+
+                        _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
+
+                        var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
+
+
+                        var employeeManagers = new List<EmployeeManager>();
+
+                        foreach (var employee in teamEmployees)
                         {
-                            var employeeEmployeeManager = new EmployeeManager
+                            if (employee.Id != selectedManagerId)
                             {
-                                ManagerId = selectedManagerId,
-                                EmployeeId = employee.Id
-                            };
+                                var employeeEmployeeManager = new EmployeeManager
+                                {
+                                    ManagerId = selectedManagerId,
+                                    EmployeeId = employee.Id
+                                };
 
-                            employeeManagers.Add(employeeEmployeeManager);
+                                employeeManagers.Add(employeeEmployeeManager);
+                            }
                         }
-                    }
 
-                    if (employeeManagers != null)
-                    {
-                        foreach (var managerRow in employeeManagers)
+                        if (employeeManagers != null)
                         {
-                            _dbContext.EmployeeManager.Add(managerRow);
+                            foreach (var managerRow in employeeManagers)
+                            {
+                                _dbContext.EmployeeManager.Add(managerRow);
+                            }
                         }
                     }
                 }
-            }             
-            
+            }
 
             _dbContext.SaveChanges();
 
