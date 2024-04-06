@@ -50,11 +50,14 @@ namespace VirtualOffice.Controllers
 
             var clockIns = getClockIns();
 
+            var teamManagers = GetManagersByTeam(null);
+
 
             var teamManagementModel = new TeamManagementWrapperModel
             {
                 TeamList = teamModel,
-                IntList = managedTeamIds
+                IntList = managedTeamIds,
+                ManagerNames = teamManagers
             };
 
             var dataExport = new EmployeeViewModel
@@ -101,11 +104,21 @@ namespace VirtualOffice.Controllers
 
         public IActionResult TeamSummary(int teamId)
         {
-            return PartialView("_TeamSummary", teamId);
+            var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
+            var employees = _dbContext.Employee
+                            .Where(e => e.TeamId == teamId)
+                            .ToList();
+
+            var teamDetailsWrapper = new TeamDetailsWrapperModel
+            {
+                Team = team,
+                Employees = employees
+            };
+
+            return PartialView("_TeamSummary", teamDetailsWrapper);
         }
 
 
-        // POST: /Manager/ClockIn
         [HttpPost]
         public ActionResult ClockIn()
         {
@@ -310,6 +323,55 @@ namespace VirtualOffice.Controllers
             return employees.ToList();
         }
 
+
+        public List<string> GetManagersByTeam(List<int> teamIds)
+        {
+            var managers = new List<string>();
+
+            var teams = new List<Team>();
+                
+                if(teamIds != null)
+            {
+                teams = _dbContext.Team.Include(t => t.Employee)
+                    .ToList()
+                    .OrderBy(t => teamIds.IndexOf(t.Id))
+                    .ToList();
+
+            }
+            else
+            {
+                teams = _dbContext.Team.Include(t => t.Employee)
+                   .ToList();
+            }
+
+            foreach (var team in teams)
+            {
+                var teamManagers = _dbContext.Employee
+                                            .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                                            .Select(e => $"{e.FirstName} {e.LastName}")
+                                            .ToList();
+
+                if (teamManagers.Count == 0)
+                {
+                    var employees = _dbContext.EmployeeManager
+                                                .Where(em => em.Employee.TeamId == team.Id && _dbContext.EmployeeManager.Any(e => e.EmployeeId == em.EmployeeId))
+                                                .Select(em => em.EmployeeId)
+                                                .ToList();
+
+                    var correspondingManagers = _dbContext.EmployeeManager
+                                                            .Where(em => employees.Contains(em.EmployeeId))
+                                                            .Select(em => $"{em.Manager.FirstName} {em.Manager.LastName}")
+                                                            .ToList();
+
+                    teamManagers.AddRange(correspondingManagers);
+                }
+
+                managers.AddRange(teamManagers);
+            }
+
+            return managers;
+        }
+
         private Dictionary<int, List<string>> GetAllEquipmentNames(List<Employee> employees)
         {
             var equipmentNamesDictionary = new Dictionary<int, List<string>>();
@@ -342,6 +404,77 @@ namespace VirtualOffice.Controllers
         {
             return _dbContext.ClockIns.ToList();
         }
+
+        public IActionResult FilterTeams(TeamFilterModel filter)
+        {
+            string loggedInUserId = User.Identity.Name;
+
+            var managedTeamIds = GetTeamManagementModel(loggedInUserId);
+
+            filter ??= new TeamFilterModel();
+            var teamQuery = this._dbContext.Team.AsEnumerable();
+
+
+
+            if (!string.IsNullOrWhiteSpace(filter.Name))
+                teamQuery = teamQuery.Where(p => p.Name.ToLower().Contains(filter.Name.ToLower()));
+
+            var model = teamQuery.ToList();
+
+            var teamManagers = GetManagersByTeam(null);
+
+            var teamManagementModel = new TeamManagementWrapperModel
+            {
+                TeamList = model,
+                IntList = managedTeamIds,
+                ManagerNames = teamManagers
+            }; 
+
+            return PartialView("_ManagerTeamTable", teamManagementModel);
+        }
+
+        public IActionResult SortTeams(string columnName, string sortDirection)
+        {
+
+            string loggedInUserId = User.Identity.Name;
+
+            var managedTeamIds = GetTeamManagementModel(loggedInUserId);
+
+
+            var teamsQuery = _dbContext.Team.AsQueryable();
+
+
+            
+
+            var testSortDir = sortDirection;
+
+            // Apply sorting based on the columnName and sortDirection
+            switch (columnName)
+            {
+                case "id":
+                    teamsQuery = sortDirection == "asc" ? teamsQuery.OrderBy(t => t.Id) : teamsQuery.OrderByDescending(t => t.Id);
+                    break;
+                case "name":
+                    teamsQuery = sortDirection == "asc" ? teamsQuery.OrderBy(t => t.Name) : teamsQuery.OrderByDescending(t => t.Name);
+                    break;
+
+                default:
+                    break;
+            }
+
+            var teams = teamsQuery.ToList();
+
+            var teamManagers = GetManagersByTeam(teams.Select(t => t.Id).ToList());
+
+            var teamManagementModel = new TeamManagementWrapperModel
+            {
+                TeamList = teams,
+                IntList = managedTeamIds,
+                ManagerNames = teamManagers
+            };
+
+            return PartialView("_ManagerTeamTable", teamManagementModel);
+        }
     }
 
     //u partial view se može slati jedan item, pa je više podataka wrappano
@@ -349,6 +482,15 @@ namespace VirtualOffice.Controllers
     {
         public List<Team> TeamList { get; set; }
         public List<int> IntList { get; set; }
+
+        public List<String> ManagerNames { get; set; }
+    }
+
+    public class TeamDetailsWrapperModel
+    {
+        public Team Team { get; set; }
+        public List<Employee> Employees { get; set; }
+
     }
 
     public class EmployeeViewModel
@@ -363,4 +505,6 @@ namespace VirtualOffice.Controllers
         public List<ClockIn> ClockIns { get; set; }
 
     }
+
+   
 }

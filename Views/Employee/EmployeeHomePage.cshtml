@@ -4,6 +4,9 @@
     Layout = null; // Remove layout inheritance
     Layout = "";
 }
+
+@model string
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -115,19 +118,9 @@
 
   </style>
 </head>
-<body>
-@*   <nav class="vertical-nav">
-    <ul>
-      <li><a href="#" data-target="home">Home</a></li>
-      <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
-      <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
-      <li><a href="#" data-target="equipment">Equipment Management</a></li>
-      <li><a href="#" data-target="clockIn">Clock In - Clock Out</a></li>
-    </ul>
-  </nav> *@
+<body> 
     <nav class="vertical-nav">
         <ul>
-            @* <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li> *@
             <li><a href="#" data-target="home">Home</a></li>
             <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
             <li><a href="#" data-target="office">Out of Office Forms</a></li>
@@ -175,6 +168,20 @@
 
 
    <script>
+
+    //loadanje partiala po loadanju stranice --start
+       document.addEventListener("DOMContentLoaded", function () {
+       
+        var modelString = '@Model';
+        if (modelString.trim() !== '') {
+            loadPartialViewEmployee(modelString);
+        }else{
+            loadPartialViewEmployee('home')
+        }       
+        });
+        //loadanje partiala po loadanju stranice --end
+
+    //dropdown za logout --start
     function toggleDropdown() {
       var dropdown = document.getElementById("dropdown");
       if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -183,7 +190,9 @@
         dropdown.style.display = "none";
       }
     }
+    //dropdown za logout --end
 
+    //trigger za navigaciju --start
     document.querySelectorAll('.vertical-nav a').forEach(item => {
         item.addEventListener('click', event => {
             event.preventDefault();
@@ -191,6 +200,7 @@
             loadPartialViewEmployee(target);
         });
     });
+    //trigger za navigaciju --end
 
     function clockIn() {
         $.ajax({
@@ -249,6 +259,8 @@
         // Display error message to the user
         $('#clockDisplay').text(message);
     }
+
+    //logika za loadanje partiala u content2 --start
     function loadPartialViewEmployee(target) {
       const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
       fetch(url)
@@ -260,7 +272,7 @@
           console.error('Error:', error);
         });
     }
-  
+    //logika za loadanje partiala u content2 --end
   </script>
 
 </body>

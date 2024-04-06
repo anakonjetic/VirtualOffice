@@ -9,6 +9,7 @@
  @model string
 
 <head>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -128,7 +129,6 @@
       <li><a href="#" data-target="office">Out of Office Forms</a></li>
       <li><a href="#" data-target="equipment">Equipment Management</a></li>
       <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
-      <li><a href="#" data-target="hierarchy">Office Hierarchy</a></li>
       <li><a href="#" data-target="employee">Employee Management</a></li>
       <li><a href="#" data-target="team">Team Management</a></li>
       <li><a href="#" data-target="export">Data Export</a></li>
@@ -176,15 +176,46 @@
 
    <script>
      
+       //loadanje partiala po loadanju stranice --start
        document.addEventListener("DOMContentLoaded", function () {
-        // Load partial view if the model string is not null
+       
         var modelString = '@Model';
         if (modelString.trim() !== '') {
             loadPartialView(modelString);
-        }
-    });
+        }else{
+            loadPartialView('home')
+        }       
+        });
+        //loadanje partiala po loadanju stranice --end
+
+        //sortiranje timova -- start
+        let sortDirection = {}; 
+
+        function sortTeams(columnName) {
+            sortDirection[columnName] = sortDirection[columnName] === 'asc' ? 'desc' : 'asc';
+
+            for (const key in sortDirection) {
+                if (key !== columnName) {
+                    sortDirection[key] = null;
+                }
+            }
 
 
+             const url = '@Url.Action("SortTeams", "Manager")?columnName=' + columnName + '&sortDirection=' + sortDirection[columnName];
+              fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                  document.getElementById('content').innerHTML = data;
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                });
+
+           
+        //sortiranje timova --end
+}
+
+    //dropdown za logout --start
     function toggleDropdown() {
       var dropdown = document.getElementById("dropdown");
       if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -193,7 +224,9 @@
         dropdown.style.display = "none";
       }
     }
+    //dropdown za logout --end
 
+    //listener za navigaciju --start
       document.querySelectorAll('.vertical-nav a').forEach(item => {
       item.addEventListener('click', event => {
         event.preventDefault();
@@ -201,10 +234,11 @@
         loadPartialView(target);
       });
     });
+    //listener za navigaciju --end
 
+    //loadanje svakog partiala u content div --start
     function loadPartialView(target) {
       const url = '@Url.Action("LoadPartialView", "Manager")?target=' + target;
-            //console.log('Generated URL:', url);
       fetch(url)
         .then(response => response.text())
         .then(data => {
@@ -214,10 +248,11 @@
           console.error('Error:', error);
         });
     }
+    //loadanje svakog partiala u content div --end
 
-    function loadEditView(teamId) {
+    //loadanje edit team partiala u content div --start
+    function loadTeamEditView(teamId) {
       const url = '@Url.Action("EditTeam", "Manager")?teamId=' + teamId;
-            //console.log('Generated URL:', url);
       fetch(url)
         .then(response => response.text())
         .then(data => {
@@ -227,9 +262,39 @@
           console.error('Error:', error);
         });
     }
+    //loadanje edit team partiala u content div --end
 
+    //loadanje details team partiala u content div --start
+    function loadTeamDetailView(teamId) {
+      const url = '@Url.Action("TeamSummary", "Manager")?teamId=' + teamId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje edit team partiala u content div --end
 
+    //loadanje filter team partiala u content div i logika triggeranja filter funkc --start
+    $(document).ready(filterTeams());
 
+    function filterTeams() {
+        var formData = $("#teamForm").serialize();
+        console.log("funkcija");
+        $.ajax({
+            url: "@Url.Action("FilterTeams", new TeamFilterModel())",
+            method: "POST",
+            data: formData,
+            success: function (html) {
+                $("#content").html(html);
+            }
+        });
+    }
+    //loadanje filter team partiala u content div i logika triggeranja filter funkc --end
+   
     function exportToExcel() {
         console.log('Exporting to Excel...');
         $.ajax({
