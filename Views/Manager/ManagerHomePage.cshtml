@@ -309,6 +309,20 @@
         });
     }
     //loadanje create team partiala u content div--end
+
+    //brisanje tima --start
+    function deleteTeam(teamId) {
+      const url = '@Url.Action("TeamDelete", "Manager")?teamId=' + teamId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //brisanje tima --end
    
     function exportToExcel() {
         console.log('Exporting to Excel...');

@@ -310,6 +310,12 @@ namespace VirtualOffice.Controllers
 
                 var selectedManagerId = int.Parse(Request.Form["Employee"]);
 
+                var selectedManager = _dbContext.Employee
+                    .Where(em => em.Id == selectedManagerId)
+                    .SingleOrDefault();
+
+                
+
                 var teamEmployees = new List<Employee>();
 
                 team.Employee = teamEmployees;
@@ -324,6 +330,18 @@ namespace VirtualOffice.Controllers
                 _dbContext.EmployeeManager.Add(employeeManager);
 
                 _dbContext.EmployeeManager.Add(employeeManager);
+
+                _dbContext.SaveChanges();
+
+                selectedManager.TeamId = team.Id;
+
+                var employeesToRemove = _dbContext.EmployeeManager
+                           .Where(em => em.EmployeeId == selectedManagerId && _dbContext.Employee.Any(e => e.TeamId == team.Id))
+                           .ToList();
+
+                _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
+
+                _dbContext.SaveChanges();
 
             }
             else
@@ -378,15 +396,37 @@ namespace VirtualOffice.Controllers
                                 _dbContext.EmployeeManager.Add(managerRow);
                             }
                         }
+
+                        
                     }
+                    _dbContext.SaveChanges();
                 }
             }
 
-            _dbContext.SaveChanges();
+            
 
-            return View("ManagerHomePage", "team");
+            return PartialView("ManagerHomePage", "team");
         }
 
+        public IActionResult TeamDelete(int teamId)
+        {
+            var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
+           
+
+            var employeesToReassign = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
+
+            var team1Id = 1; 
+            foreach (var employee in employeesToReassign)
+            {
+                employee.TeamId = team1Id;
+            }
+            _dbContext.SaveChanges();
+
+            _dbContext.Remove(team);
+            _dbContext.SaveChanges();
+
+            return PartialView("ManagerHomePage", "team");
+        }
 
 
         //dohvaćanje svih zaposlenika koji se nalaze u timovima menadžiranih od strane logged in usera
