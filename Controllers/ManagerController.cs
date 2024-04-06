@@ -246,24 +246,121 @@ namespace VirtualOffice.Controllers
 
         public IActionResult EditTeam(int teamId)
         {
-            var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
 
-            return PartialView("_EditTeamForm", team);
-        }
+            // Fetch available managers and employees from the database
+            var managers = _dbContext.Employee.ToList();
+            var allEmployees = _dbContext.Employee.ToList();
+            List<Employee> teamEmployees = new List<Employee>();
+            var team = new Team();
 
-        public async Task<IActionResult> SaveTeam(int id)
-        {
-            var team = this._dbContext.Team.Single(d => d.Id == id);
-            var ok = await this.TryUpdateModelAsync(team);
+            Employee selectedManager = null;
 
-            if (ok && this.ModelState.IsValid)
+            if (teamId != null)
             {
-                this._dbContext.SaveChanges();
-                return View("ManagerHomePage", "team");
+                // Fetch the team to be edited
+                team = _dbContext.Team
+                    .Include(t => t.Employee) // Include employees associated with the team
+                    .FirstOrDefault(t => t.Id == teamId);
+
+                if (team != null)
+                {
+                    var teamManagers = _dbContext.Employee
+                    .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                    .Select(e => $"{e.FirstName} {e.LastName}")
+                    .ToList();
+
+                    var managerInfo = _dbContext.Employee
+                        .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                        .Select(e => e)
+                        .FirstOrDefault();
+
+
+                    teamEmployees = allEmployees.Where(e => e.TeamId == team.Id).ToList();
+
+                    selectedManager = managerInfo;
+                }
             }
 
-            return View();
+            // Pass managers and employees to the view
+            ViewData["SelectedManager"] = selectedManager;
+            ViewData["Managers"] = managers;
+            ViewData["Employees"] = teamEmployees;
+
+            return PartialView("_TeamCreate", team);
         }
+
+        public IActionResult TeamCreate()
+        {
+            var managers = _dbContext.Employee.ToList();
+            var employees = _dbContext.Employee.ToList();
+
+            ViewData["Managers"] = managers;
+            ViewData["Employees"] = employees;
+
+            return PartialView("_EditTeamForm");
+        }
+
+        public IActionResult SaveTeam(int id)
+        {
+            var team = _dbContext.Team
+                   .Include(t => t.Employee)
+                   .FirstOrDefault(t => t.Id == id);
+
+            var teamName = Request.Form["Name"];
+            team.Name = teamName;
+
+            var selectedManagerId = int.Parse(Request.Form["Employee"]);
+
+            var previousManagerId = _dbContext.Employee
+                    .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                    .Select(e => e.Id)
+                    .SingleOrDefault();
+
+            if (selectedManagerId != 0)
+            {
+                if (previousManagerId != null && previousManagerId != selectedManagerId)
+                {
+                    var employeesToRemove = _dbContext.EmployeeManager
+                        .Where(em => em.ManagerId == previousManagerId && _dbContext.Employee.Any(e => e.Id == em.EmployeeId && e.TeamId == team.Id ))
+                        .ToList();
+
+                    _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
+
+                    var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
+
+
+                    var employeeManagers = new List<EmployeeManager>();
+
+                    foreach (var employee in teamEmployees)
+                    {
+                        if (employee.Id != selectedManagerId)
+                        {
+                            var employeeEmployeeManager = new EmployeeManager
+                            {
+                                ManagerId = selectedManagerId,
+                                EmployeeId = employee.Id
+                            };
+
+                            employeeManagers.Add(employeeEmployeeManager);
+                        }
+                    }
+
+                    if (employeeManagers != null)
+                    {
+                        foreach (var managerRow in employeeManagers)
+                        {
+                            _dbContext.EmployeeManager.Add(managerRow);
+                        }
+                    }
+                }
+            }             
+            
+
+            _dbContext.SaveChanges();
+
+            return View("ManagerHomePage", "team");
+        }
+
 
 
         //dohvaćanje svih zaposlenika koji se nalaze u timovima menadžiranih od strane logged in usera

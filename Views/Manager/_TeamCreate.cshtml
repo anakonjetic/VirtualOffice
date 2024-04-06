@@ -1,0 +1,92 @@
+﻿@model Team
+@{
+    var managers = ViewData["Managers"] as List<Employee>;
+    var selectedManager = ViewData["SelectedManager"] as Employee;
+    var availableEmployees = ViewData["Employees"] as List<Employee>;
+
+    var selectedManagers = managers.Select(m => new SelectListItem
+            {
+                Text = m.FirstName + " " + m.LastName,
+                Value = m.Id.ToString(),
+                Selected = (selectedManager != null && m.Id == selectedManager.Id)
+            });
+}
+
+<style>
+    /* Hide the default dropdown arrow */
+    select.custom-select::-ms-expand {
+        display: none;
+    }
+
+    select.custom-select {
+        /* Add a background image as a custom dropdown arrow */
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 12l-5-5 1.5-1.5L10 9.25l3.5-3.75L15 7z" clip-rule="evenodd" /></svg>');
+        background-repeat: no-repeat;
+        background-position-x: 95%;
+        background-position-y: center;
+        /* Set a fixed height for the dropdown list */
+        height: 40px; /* Adjust height as needed */
+        /* Ensure the dropdown list is scrollable */
+        overflow-y: auto;
+    }
+
+    input.custom-text-input {
+        /* Add your desired styles here */
+        padding: 8px 12px; /* Adjust padding as needed */
+        font-size: 14px; /* Adjust font size as needed */
+        border: 1px solid #ccc; /* Add border styles as needed */
+        border-radius: 4px; /* Add border radius as needed */
+        box-sizing: border-box; /* Ensure padding and border are included in the width */
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialView('team')">Team Table</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+            @if (Model == null)
+            {
+                <p>New Team Form</p>
+            }
+            else
+            {
+                @Model.Name
+            }
+        </li>
+    </ol>
+</nav>
+
+@if (Model == null)
+{
+    <p class="input-group-prepend input-group-text" style="margin-bottom:20px;">CREATE NEW TEAM</p>
+}
+else
+{
+    <p class="input-group-prepend input-group-text" style="margin-bottom:20px;">EDIT TEAM</p>
+}
+
+
+<form asp-action="SaveTeam" method="post">
+    <input type="hidden" name="id" asp-for="Id" value="@Model.Id" />
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputTeamName">Team Name</label>
+        </div>
+        <input type="text" asp-for="Name" class="form-control custom-text-input" id="inputTeamName" value="@Model.Name" />
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputManager">Manager</label>
+        </div>
+        <select asp-for="Employee" class="custom-select" id="inputManager">
+            @foreach (var manager in selectedManagers)
+            {
+                <option value="@manager.Value" selected="@manager.Selected">@manager.Text</option>
+            }
+        </select>
+    </div>
+
+    <input type="submit" value="SAVE" class="btn btn-success" />
+</form>
