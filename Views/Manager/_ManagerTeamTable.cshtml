@@ -1,0 +1,94 @@
+﻿<head>
+    <style>
+        /* Card container styles */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Adjust the gap between cards */
+            justify-content: flex-start;
+            align-items: stretch;
+        }
+
+        /* Card styles */
+        .team-card {
+            flex: 1 1 auto;
+            background-color: #f0f0f0; /* Set background color */
+            border-radius: 8px; /* Add border radius for a rounded look */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            padding: 20px; /* Add padding inside the card */
+            text-align: left;
+            cursor: pointer; /* Change cursor to pointer for clickable cards */
+            text-decoration: none;
+        }
+
+        .team-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover for visual feedback */
+        }
+
+        /* Team link styles */
+        .team-link {
+            color: #4C68D7;
+            text-decoration: none;
+        }
+
+        .team-link:hover {
+            text-decoration: none;
+        }
+
+        /* Hide the input initially */
+        .edit-form {
+            display: none;
+        }
+
+        .edit-toggle:checked + .edit-link + .edit-form {
+            display: block;
+        }
+
+        /* Save button styles */
+        .save-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<div style="margin-top: 20px; margin-bottom: 10px;">
+	<partial name="_TeamFilter" model="new TeamFilterModel()" />
+</div>
+
+
+
+
+<table class="table" id="tableContainer">
+	<thead>
+		<tr>
+			<th onclick="sortTeams('id')">ID</th>
+			<th onclick="sortTeams('name')">Team</th>
+			<th>Manager</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var team in Model.TeamList)
+		{
+			<tr>
+                <td>@team.Id</td>
+				<td>
+					<p onclick="loadTeamDetailView(@team.Id)"  style="text-decoration:underline;">@team.Name</p>
+				</td>
+				<td>@Model.ManagerNames[Model.TeamList.IndexOf(team)]</td>
+				<td>
+				@if (Model.IntList.Contains(team.Id))
+                {
+                  <a href="#" onclick="loadTeamEditView(@team.Id)">[edit]</a>
+                  <a href="#" onclick="deleteTeam(@team.Id)">[x]</a>
+
+                }
+                else
+                {
+                    <p>No permission</p>
+                }
+			</td>
+			</tr>
+		}
+	</tbody>
+</table>

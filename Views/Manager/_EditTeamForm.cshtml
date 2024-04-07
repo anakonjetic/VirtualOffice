@@ -1,0 +1,11 @@
+﻿@model Team
+
+<p>EDIT TEAM</p>
+
+ <form asp-action="SaveTeam" method="post">
+    <!-- Your form fields for editing -->
+    <!-- Example: -->
+    <input type="text" asp-for="Name" value="@Model.Name" />
+    <input type="hidden" name="id" asp-for="Id" value="@Model.Id" />
+    <input type="submit"  value="Spremi" class="save-btn"/>
+</form>

@@ -1,0 +1,414 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@{
+    Layout = null;
+    Layout = "";
+    
+ }
+
+ @model string
+
+<head>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Vertical Navigation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .top-card {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 100px;
+      background-color: #007bff;
+      color: #fff;
+      display: flex;
+      font-size: 40px;
+      display: flex;
+      align-items: center; 
+      justify-content: flex-start; 
+      padding-left: 20px;
+    }
+
+    .vertical-nav {
+      position: fixed;
+      left: 0;
+      top: 0; 
+      width: 200px; 
+      height: 100%; 
+      background-color: #333;
+    }
+
+    .vertical-nav ul {  
+      border-top: 1px solid #555;
+      margin-top: 100px;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .vertical-nav li {
+      border-bottom: 1px solid #555;
+    }
+
+    .vertical-nav li:last-child {
+      border-bottom: none;
+    }
+
+    .vertical-nav a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 20px;
+    }
+
+    .vertical-nav a:hover {
+      background-color: #555;
+    }
+
+    .user-circle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 60px;
+      height: 60px;
+      background-color: #555;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 25px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 60px; 
+      right: 15px;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      font-size: 20px;
+    }
+
+    .dropdown a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 0;
+      font-size: 20px;
+    }
+
+    .content {
+    margin-left: 280px;
+    margin-top: 110px;
+    padding: 20px;
+    width: calc(100% - 400px); /* Subtract the width of the vertical nav */
+    height: calc(100% - 150px); /* Subtract the height of the top card */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+    background-color: #fff; /* Set background color */
+    border-radius: 8px; /* Add border radius for a rounded look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+
+    
+}
+  </style>
+</head>
+<body>
+  <nav class="vertical-nav">
+    <ul>
+      <li><a href="#" data-target="home">Home</a></li>
+      <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
+      <li><a href="#" data-target="office">Out of Office Forms</a></li>
+      <li><a href="#" data-target="equipment">Equipment Management</a></li>
+      <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
+      <li><a href="#" data-target="employee">Employee Management</a></li>
+      <li><a href="#" data-target="team">Team Management</a></li>
+      <li><a href="#" data-target="export">Data Export</a></li>
+    </ul>
+  </nav>
+  <div class="top-card">
+    @{
+        string username = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            int atIndex = email.IndexOf('@');
+            if (atIndex != -1)
+            {
+                username = email.Substring(0, atIndex);
+            }
+            else
+            {
+                username = email;
+            }
+        }
+    }
+    Hello, @username!
+    
+    <div class="user-circle" onclick="toggleDropdown()" style="text-transform: uppercase;"> @{
+        string userId = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            userId = (email.Substring(0, 2));
+        }
+    }@userId</div>
+    <div class="dropdown" id="dropdown">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
+    </div>
+  </div>
+
+    <div class="content" id="content">
+        <!--partials se izgeneriraju ovdje-->
+  </div>
+
+
+
+   <script>
+     
+       //loadanje partiala po loadanju stranice --start
+       document.addEventListener("DOMContentLoaded", function () {
+       
+        var modelString = '@Model';
+        if (modelString.trim() !== '') {
+            loadPartialView(modelString);
+        }else{
+            loadPartialView('home')
+        }       
+        });
+        //loadanje partiala po loadanju stranice --end
+
+        //sortiranje timova -- start
+        let sortDirection = {}; 
+
+        function sortTeams(columnName) {
+            sortDirection[columnName] = sortDirection[columnName] === 'asc' ? 'desc' : 'asc';
+
+            for (const key in sortDirection) {
+                if (key !== columnName) {
+                    sortDirection[key] = null;
+                }
+            }
+
+
+             const url = '@Url.Action("SortTeams", "Manager")?columnName=' + columnName + '&sortDirection=' + sortDirection[columnName];
+              fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                  document.getElementById('content').innerHTML = data;
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                });
+
+           
+        //sortiranje timova --end
+}
+
+    //dropdown za logout --start
+    function toggleDropdown() {
+      var dropdown = document.getElementById("dropdown");
+      if (dropdown.style.display === "none" || dropdown.style.display === "") {
+        dropdown.style.display = "block";
+      } else {
+        dropdown.style.display = "none";
+      }
+    }
+    //dropdown za logout --end
+
+    //listener za navigaciju --start
+      document.querySelectorAll('.vertical-nav a').forEach(item => {
+      item.addEventListener('click', event => {
+        event.preventDefault();
+        const target = event.target.dataset.target;
+        loadPartialView(target);
+      });
+    });
+    //listener za navigaciju --end
+
+    //loadanje svakog partiala u content div --start
+    function loadPartialView(target) {
+      const url = '@Url.Action("LoadPartialView", "Manager")?target=' + target;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje svakog partiala u content div --end
+
+    //loadanje edit team partiala u content div --start
+    function loadTeamEditView(teamId) {
+      const url = '@Url.Action("EditTeam", "Manager")?teamId=' + teamId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje edit team partiala u content div --end
+
+    //loadanje details team partiala u content div --start
+    function loadTeamDetailView(teamId) {
+      const url = '@Url.Action("TeamSummary", "Manager")?teamId=' + teamId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje edit team partiala u content div --end
+
+    //loadanje filter team partiala u content div i logika triggeranja filter funkc --start
+
+    function filterTeams() {
+        var formData = $("#teamForm").serialize();
+        console.log("funkcija");
+        $.ajax({
+            url: "@Url.Action("FilterTeams", new TeamFilterModel())",
+            method: "POST",
+            data: formData,
+            success: function (html) {
+                $("#content").html(html);
+            }
+        });
+    }
+    //loadanje filter team partiala u content div i logika triggeranja filter funkc --end
+
+    //loadanje create team partiala u content div--start
+
+    function createTeam() {
+      const url = '@Url.Action("TeamCreate", "Manager")?teamId=' + null;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje create team partiala u content div--end
+
+    //brisanje tima --start
+    function deleteTeam(teamId) {
+      const url = '@Url.Action("TeamDelete", "Manager")?teamId=' + teamId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //brisanje tima --end
+   
+    function exportToExcel() {
+        console.log('Exporting to Excel...');
+        $.ajax({
+            url: '/Manager/ExportToExcel', // URL to your export action
+            type: 'GET',
+            xhrFields: {
+                responseType: 'blob' // Set the response type to blob
+            },
+            success: function (response) {
+                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'Employees.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            },
+            error: function (xhr, status, error) {
+                alert('Export failed: ' + error);
+            }
+        });
+        // Prevent the default behavior of the anchor tag
+        return false;
+    }
+
+    function clockIn() {
+        $.ajax({
+            url: '/Manager/ClockIn',
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    var clockInTime = new Date();
+                    var formattedClockInTime = formatDate(clockInTime);
+                    $('#clockDisplay').text('Clock In Time: ' + formattedClockInTime);
+                } else {
+                    showError(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                showError('Clock in operation failed: ' + error);
+            }
+        });
+    }
+
+    function clockOut() {
+        $.ajax({
+            url: '/Manager/ClockOut',
+            type: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    var clockOutTime = new Date();
+                    var formattedClockOutTime = formatDate(clockOutTime);
+                    var message = 'Clock Out Time: ' + formattedClockOutTime;
+                    if (response.timeWorked) {
+                        message += ' | Time Worked: ' + response.timeWorked;
+                    }
+                    $('#clockDisplay').text(message);
+                } else {
+                    showError(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                showError('Clock out operation failed: ' + error);
+            }
+        });
+    }
+
+    function formatDate(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var seconds = date.getSeconds();
+        return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+    }
+
+    function pad(num) {
+        return (num < 10 ? '0' : '') + num;
+    }
+
+    function showError(message) {
+        // Display error message to the user
+        $('#clockDisplay').text(message);
+    }
+
+   
+
+  </script>
+</body>
