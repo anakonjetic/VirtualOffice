@@ -286,7 +286,19 @@ namespace VirtualOffice.Controllers
             ViewData["Managers"] = managers;
             ViewData["Employees"] = teamEmployees;
 
-            return PartialView("_TeamCreate", team);
+            var teamViewModel = new TeamViewModel { 
+                Id = team.Id,
+                Name = team.Name,
+                ManagerId = _dbContext.Employee
+                        .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                        .Select(e => e.Id)
+                        .FirstOrDefault(),
+                Managers = managers,
+                SelectedEmployeeIds = teamEmployees.Select(e => e.Id).ToList(),
+                AvailableEmployees = allEmployees
+                };
+
+            return PartialView("_TeamCreate", teamViewModel);
         }
 
         public IActionResult TeamCreate()
@@ -363,10 +375,10 @@ namespace VirtualOffice.Controllers
                        .Include(t => t.Employee)
                        .FirstOrDefault(t => t.Id == model.Id);
 
-                var teamName = Request.Form["Name"];
-                team.Name = teamName;
+                
+                team.Name = model.Name;
 
-                var selectedManagerId = int.Parse(Request.Form["Employee"]);
+                var selectedManagerId = model.ManagerId;
 
                 var previousManagerId = _dbContext.Employee
                         .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
@@ -375,16 +387,43 @@ namespace VirtualOffice.Controllers
 
                 if (selectedManagerId != 0)
                 {
+                    var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList(); 
+                    var selectedEmployees = _dbContext.Employee
+                           .Where(e => model.SelectedEmployeeIds.Contains(e.Id))
+                           .ToList();
+
+                    foreach (var teamEmployee in teamEmployees)
+                    {
+                        if (!selectedEmployees.Select(e => e.Id).ToList().Contains(teamEmployee.Id))
+                        {
+                            
+                            teamEmployee.TeamId = 1;
+                        }
+                    }
+
+                    foreach (var selected in selectedEmployees)
+                    {
+                        if (!teamEmployees.Select(e => e.Id).ToList().Contains(selected.Id))
+                        {
+
+                            selected.TeamId = model.Id;
+                        }
+                    }
+
+
+
                     if (previousManagerId != null && previousManagerId != selectedManagerId)
                     {
+
                         var employeesToRemove = _dbContext.EmployeeManager
                             .Where(em => em.ManagerId == previousManagerId && _dbContext.Employee.Any(e => e.Id == em.EmployeeId && e.TeamId == team.Id))
                             .ToList();
 
                         _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
 
-                        var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
+                        _dbContext.SaveChanges();
 
+                        teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
 
                         var employeeManagers = new List<EmployeeManager>();
 
@@ -412,6 +451,10 @@ namespace VirtualOffice.Controllers
 
                         
                     }
+
+                    
+
+
                     _dbContext.SaveChanges();
                 }
             }
@@ -439,7 +482,7 @@ namespace VirtualOffice.Controllers
             _dbContext.Remove(team);
 
             var managementToDelete = _dbContext.EmployeeManager
-                .Where(e => e.ManagerId == e.EmployeeId)
+                .Where(e => e.ManagerId == e.EmployeeId && _dbContext.Employee.Any(em=> employeesToReassign.Select(res => res.Id).Contains( em.Id) && em.Id == e.ManagerId))
                 .ToList();
 
             _dbContext.RemoveRange(managementToDelete);
