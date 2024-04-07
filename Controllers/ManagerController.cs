@@ -246,23 +246,266 @@ namespace VirtualOffice.Controllers
 
         public IActionResult EditTeam(int teamId)
         {
-            var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
 
-            return PartialView("_EditTeamForm", team);
-        }
+            // Fetch available managers and employees from the database
+            var managers = _dbContext.Employee.ToList();
+            var allEmployees = _dbContext.Employee.ToList();
+            List<Employee> teamEmployees = new List<Employee>();
+            var team = new Team();
 
-        public async Task<IActionResult> SaveTeam(int id)
-        {
-            var team = this._dbContext.Team.Single(d => d.Id == id);
-            var ok = await this.TryUpdateModelAsync(team);
+            Employee selectedManager = null;
 
-            if (ok && this.ModelState.IsValid)
+            if (teamId != null)
             {
-                this._dbContext.SaveChanges();
-                return View("ManagerHomePage", "team");
+                // Fetch the team to be edited
+                team = _dbContext.Team
+                    .Include(t => t.Employee) // Include employees associated with the team
+                    .FirstOrDefault(t => t.Id == teamId);
+
+                if (team != null)
+                {
+                    var teamManagers = _dbContext.Employee
+                    .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                    .Select(e => $"{e.FirstName} {e.LastName}")
+                    .ToList();
+
+                    var managerInfo = _dbContext.Employee
+                        .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                        .Select(e => e)
+                        .FirstOrDefault();
+
+
+                    teamEmployees = allEmployees.Where(e => e.TeamId == team.Id).ToList();
+
+                    selectedManager = managerInfo;
+                }
             }
 
-            return View();
+            // Pass managers and employees to the view
+            ViewData["SelectedManager"] = selectedManager;
+            ViewData["Managers"] = managers;
+            ViewData["Employees"] = teamEmployees;
+
+            var teamViewModel = new TeamViewModel { 
+                Id = team.Id,
+                Name = team.Name,
+                ManagerId = _dbContext.Employee
+                        .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                        .Select(e => e.Id)
+                        .FirstOrDefault(),
+                Managers = managers,
+                SelectedEmployeeIds = teamEmployees.Select(e => e.Id).ToList(),
+                AvailableEmployees = allEmployees
+                };
+
+            return PartialView("_TeamCreate", teamViewModel);
+        }
+
+        public IActionResult TeamCreate()
+        {
+            List<int> employeeIdsWithManagers = _dbContext.EmployeeManager
+                .Select(em => em.ManagerId)
+                .ToList();
+
+            var managers = _dbContext.Employee.ToList();
+            var employees = _dbContext.Employee
+                .Where(e => !employeeIdsWithManagers.Contains(e.Id))
+                .ToList();
+
+
+            ViewData["Managers"] = managers;
+            ViewData["Employees"] = employees;
+
+            return PartialView("_TeamCreate", null);
+        }
+
+        public IActionResult SaveTeam(TeamViewModel model)
+        {
+            Team team;
+
+            if (model.Id == 0) {
+                team = new Team();
+
+                team.Name = model.Name;
+
+                var selectedManagerId = model.ManagerId;
+
+                var selectedManager = _dbContext.Employee
+                    .Where(em => em.Id == selectedManagerId)
+                    .SingleOrDefault();
+
+                List<Employee> teamEmployees = _dbContext.Employee
+                       .Where(e => model.SelectedEmployeeIds.Contains(e.Id))
+                       .ToList();
+
+               
+
+                var employeeManager = new EmployeeManager
+                {
+                    ManagerId = selectedManagerId,
+                    EmployeeId = selectedManagerId
+                };
+
+                _dbContext.Team.Add(team);
+                _dbContext.EmployeeManager.Add(employeeManager);
+
+                _dbContext.EmployeeManager.Add(employeeManager);
+
+                _dbContext.SaveChanges();
+
+                selectedManager.TeamId = team.Id;
+
+                foreach (var teamEmployee in teamEmployees)
+                {
+                    teamEmployee.TeamId = team.Id;
+                }
+
+                var employeesToRemove = _dbContext.EmployeeManager
+                           .Where(em => em.EmployeeId == selectedManagerId && _dbContext.Employee.Any(e => e.TeamId == team.Id))
+                           .ToList();
+
+                _dbContext.EmployeeManager.RemoveRange(employeesToRemove);               
+
+                _dbContext.SaveChanges();
+
+            }
+            else
+            {
+                team = _dbContext.Team
+                       .Include(t => t.Employee)
+                       .FirstOrDefault(t => t.Id == model.Id);
+
+                
+                team.Name = model.Name;
+
+                var selectedManagerId = model.ManagerId;
+
+                var previousManagerId = _dbContext.Employee
+                        .Where(e => e.TeamId == team.Id && _dbContext.EmployeeManager.Any(em => em.ManagerId == e.Id))
+                        .Select(e => e.Id)
+                        .SingleOrDefault();
+
+                if (selectedManagerId != 0)
+                {
+                    var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList(); 
+                    var selectedEmployees = _dbContext.Employee
+                           .Where(e => model.SelectedEmployeeIds.Contains(e.Id))
+                           .ToList();
+
+                    foreach (var teamEmployee in teamEmployees)
+                    {
+                        if (!selectedEmployees.Select(e => e.Id).ToList().Contains(teamEmployee.Id))
+                        {
+                            
+                            teamEmployee.TeamId = 1;
+                        }
+                    }
+
+                    foreach (var selected in selectedEmployees)
+                    {
+                        if (!teamEmployees.Select(e => e.Id).ToList().Contains(selected.Id))
+                        {
+
+                            selected.TeamId = model.Id;
+                        }
+                    }
+
+
+
+                    if (previousManagerId != null && previousManagerId != selectedManagerId)
+                    {
+
+                        var employeesToRemove = _dbContext.EmployeeManager
+                            .Where(em => em.ManagerId == previousManagerId && _dbContext.Employee.Any(e => e.Id == em.EmployeeId && e.TeamId == team.Id))
+                            .ToList();
+
+                        _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
+
+                        _dbContext.SaveChanges();
+
+                        teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
+
+                        var employeeManagers = new List<EmployeeManager>();
+
+                        foreach (var employee in teamEmployees)
+                        {
+                            if (employee.Id != selectedManagerId)
+                            {
+                                var employeeEmployeeManager = new EmployeeManager
+                                {
+                                    ManagerId = selectedManagerId,
+                                    EmployeeId = employee.Id
+                                };
+
+                                employeeManagers.Add(employeeEmployeeManager);
+                            }
+                        }
+
+                        if (employeeManagers != null)
+                        {
+                            foreach (var managerRow in employeeManagers)
+                            {
+                                _dbContext.EmployeeManager.Add(managerRow);
+                            }
+                        }
+
+                        
+                    }
+
+                    
+
+
+                    _dbContext.SaveChanges();
+                }
+            }
+
+            
+
+            return PartialView("ManagerHomePage", "team");
+        }
+
+        public IActionResult TeamDelete(int teamId)
+        {
+            string loggedInUserId = User.Identity.Name;
+            var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
+           
+
+            var employeesToReassign = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
+
+            var team1Id = 1; 
+            foreach (var employee in employeesToReassign)
+            {
+                employee.TeamId = team1Id;
+            }
+            _dbContext.SaveChanges();
+
+            _dbContext.Remove(team);
+
+            var managementToDelete = _dbContext.EmployeeManager
+                .Where(e => e.ManagerId == e.EmployeeId && _dbContext.Employee.Any(em=> employeesToReassign.Select(res => res.Id).Contains( em.Id) && em.Id == e.ManagerId))
+                .ToList();
+
+            _dbContext.RemoveRange(managementToDelete);
+
+            _dbContext.SaveChanges();
+
+            var teamModel = GetAllTeamData();
+
+            var employees = GetAllEmployees();
+
+            var teamManagers = GetManagersByTeam(null);
+
+            var managedTeamIds = GetTeamManagementModel(loggedInUserId);
+            
+            var teamManagementModel = new TeamManagementWrapperModel
+            {
+                TeamList = teamModel,
+                IntList = managedTeamIds,
+                ManagerNames = teamManagers
+            };
+
+
+            return PartialView("_ManagerTeamTable", teamManagementModel);
         }
 
 
@@ -506,5 +749,15 @@ namespace VirtualOffice.Controllers
 
     }
 
-   
+    public class TeamViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int ManagerId { get; set; }
+        public List<int> SelectedEmployeeIds { get; set; }
+        public List<Employee> Managers { get; set; }
+        public List<Employee> AvailableEmployees { get; set; }
+    }
+
+
 }

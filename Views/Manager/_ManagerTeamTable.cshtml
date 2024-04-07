@@ -80,7 +80,7 @@
 				@if (Model.IntList.Contains(team.Id))
                 {
                   <a href="#" onclick="loadTeamEditView(@team.Id)">[edit]</a>
-
+                  <a href="#" onclick="deleteTeam(@team.Id)">[x]</a>
 
                 }
                 else

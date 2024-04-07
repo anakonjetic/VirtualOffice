@@ -279,7 +279,6 @@
     //loadanje edit team partiala u content div --end
 
     //loadanje filter team partiala u content div i logika triggeranja filter funkc --start
-    $(document).ready(filterTeams());
 
     function filterTeams() {
         var formData = $("#teamForm").serialize();
@@ -294,6 +293,35 @@
         });
     }
     //loadanje filter team partiala u content div i logika triggeranja filter funkc --end
+
+    //loadanje create team partiala u content div--start
+
+    function createTeam() {
+      const url = '@Url.Action("TeamCreate", "Manager")?teamId=' + null;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //loadanje create team partiala u content div--end
+
+    //brisanje tima --start
+    function deleteTeam(teamId) {
+      const url = '@Url.Action("TeamDelete", "Manager")?teamId=' + teamId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //brisanje tima --end
    
     function exportToExcel() {
         console.log('Exporting to Excel...');
@@ -380,7 +408,7 @@
         $('#clockDisplay').text(message);
     }
 
-      
+   
 
   </script>
 </body>
