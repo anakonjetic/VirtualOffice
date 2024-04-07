@@ -1,0 +1,14 @@
+﻿
+@model TeamFilterModel
+
+<form asp-action="FilterTeams" id="teamForm" method="post">
+	<div class="row">
+		<div class="col">
+			<input asp-for="Name" class="form-control" type="text" placeholder="Team Name" />
+		</div>
+		<div class="col">
+			<button type="button" onclick="filterTeams()" class="btn btn-outline-info">SEARCH</button>
+			<button type="button" onclick="createTeam()" class="btn btn-success">CREATE NEW</button>
+		</div>
+	</div>
+</form>
