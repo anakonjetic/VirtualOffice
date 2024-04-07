@@ -1,0 +1,23 @@
+﻿@model List<Employee>
+
+<table style="margin-top: 20px;" class="table table-condensed">
+	<thead>
+		<tr>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Team</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>@item.FirstName</td>
+				<td>@item.LastName</td>
+				<td>@item.Team.Name</td>
+				<td><a href="#" onclick="loadEditView(@item.Id)">[Edit]</a></td>
+				<td><button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Delete", "Manager", new { Id = item.Id })'">Delete</button></td>
+			</tr>
+		}
+	</tbody>
+</table>

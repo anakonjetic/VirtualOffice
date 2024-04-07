@@ -1,0 +1,58 @@
+﻿<head>
+    <style>
+        /* Card container styles */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Adjust the gap between cards */
+            justify-content: flex-start;
+            align-items: stretch;
+        }
+
+        /* Card styles */
+        .team-card {
+            flex: 1 1 auto;
+            background-color: #f0f0f0; /* Set background color */
+            border-radius: 8px; /* Add border radius for a rounded look */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+            padding: 20px; /* Add padding inside the card */
+            text-align: left;
+            cursor: pointer; /* Change cursor to pointer for clickable cards */
+            text-decoration: none;
+        }
+
+        .team-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow on hover for visual feedback */
+        }
+
+        /* Team link styles */
+        .team-link {
+            color: #4C68D7;
+            text-decoration: none;
+        }
+
+        .team-link:hover {
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        @foreach (var team in Model.TeamList)
+        {
+            <a href="@Url.Action("TeamSummary", "Manager", new { teamId = team.Id })" class="team-card">
+                <h4>@team.Name</h4>
+                <p>Team ID: @team.Id</p>
+                @if (Model.IntList.Contains(team.Id))
+                {
+                    <p href="@Url.Action("EditTeam", "Manager", new { teamId = team.Id })"><!--<a href="@Url.Action("EditTeam", "Manager", new { teamId = team.Id })" class="team-link">-->Edit</p>
+                }
+                else
+                {
+                    <p>No permission</p>
+                }
+            </a>
+        }
+    </div>
+</body>

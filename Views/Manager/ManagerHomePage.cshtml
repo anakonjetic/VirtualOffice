@@ -1,0 +1,215 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@{
+    Layout = null;
+    Layout = "";
+ }
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vertical Navigation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .top-card {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 100px;
+      background-color: #007bff;
+      color: #fff;
+      display: flex;
+      font-size: 40px;
+      display: flex;
+      align-items: center; 
+      justify-content: flex-start; 
+      padding-left: 20px;
+    }
+
+    .vertical-nav {
+      position: fixed;
+      left: 0;
+      top: 0; 
+      width: 200px; 
+      height: 100%; 
+      background-color: #333;
+    }
+
+    .vertical-nav ul {  
+      border-top: 1px solid #555;
+      margin-top: 100px;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .vertical-nav li {
+      border-bottom: 1px solid #555;
+    }
+
+    .vertical-nav li:last-child {
+      border-bottom: none;
+    }
+
+    .vertical-nav a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 20px;
+    }
+
+    .vertical-nav a:hover {
+      background-color: #555;
+    }
+
+    .user-circle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 60px;
+      height: 60px;
+      background-color: #555;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 25px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 60px; 
+      right: 15px;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      font-size: 20px;
+    }
+
+    .dropdown a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 0;
+      font-size: 20px;
+    }
+
+    .content {
+    margin-left: 280px;
+    margin-top: 110px;
+    padding: 20px;
+    width: calc(100% - 400px); /* Subtract the width of the vertical nav */
+    height: calc(100% - 150px); /* Subtract the height of the top card */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+    background-color: #fff; /* Set background color */
+    border-radius: 8px; /* Add border radius for a rounded look */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
+  </style>
+</head>
+<body>
+  <nav class="vertical-nav">
+    <ul>
+      <li><a href="#" data-target="home">Home</a></li>
+      <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
+      <li><a href="#" data-target="office">Out of Office Forms</a></li>
+      <li><a href="#" data-target="equipment">Equipment Management</a></li>
+      <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
+      <li><a href="#" data-target="hierarchy">Office Hierarchy</a></li>
+      <li><a href="#" data-target="employee">Employee Management</a></li>
+      <li><a href="#" data-target="team">Team Management</a></li>
+      <li><a href="#" data-target="export">Data Export</a></li>
+      <li><a href="#" data-target="create">Create employee</a></li>
+    </ul>
+  </nav>
+  <div class="top-card">
+    @{
+        string username = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            int atIndex = email.IndexOf('@');
+            if (atIndex != -1)
+            {
+                username = email.Substring(0, atIndex);
+            }
+            else
+            {
+                username = email;
+            }
+        }
+    }
+    Hello, @username!
+    
+    <div class="user-circle" onclick="toggleDropdown()" style="text-transform: uppercase;"> @{
+        string userId = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            userId = (email.Substring(0, 2));
+        }
+    }@userId</div>
+    <div class="dropdown" id="dropdown">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
+    </div>
+  </div>
+
+    <div class="content" id="content">
+        <!--partials se izgeneriraju ovdje-->
+  </div>
+
+   <script>
+
+
+    function toggleDropdown() {
+      var dropdown = document.getElementById("dropdown");
+      if (dropdown.style.display === "none" || dropdown.style.display === "") {
+        dropdown.style.display = "block";
+      } else {
+        dropdown.style.display = "none";
+      }
+    }
+
+      document.querySelectorAll('.vertical-nav a').forEach(item => {
+      item.addEventListener('click', event => {
+        event.preventDefault();
+        const target = event.target.dataset.target;
+        loadPartialView(target);
+      });
+    });
+
+    function loadPartialView(target) {
+      const url = '@Url.Action("LoadPartialView", "Manager")?target=' + target;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function loadEditView(modelId){
+        const url = '@Url.Action("Edit", "Manager")?modelId=' + modelId;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('content').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+    }
+
+  </script>
+</body>

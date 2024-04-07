@@ -1,0 +1,169 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@{
+    Layout = null; // Remove layout inheritance
+}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vertical Navigation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .top-card {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 100px;
+      background-color: #007bff;
+      color: #fff;
+      display: flex;
+      font-size: 40px;
+      display: flex;
+      align-items: center; 
+      justify-content: flex-start; 
+      padding-left: 20px;
+    }
+
+    .vertical-nav {
+      position: fixed;
+      left: 0;
+      top: 0; 
+      width: 200px; 
+      height: 100%; 
+      background-color: #333;
+    }
+
+    .vertical-nav ul {  
+      border-top: 1px solid #555;
+      margin-top: 100px;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .vertical-nav li {
+      border-bottom: 1px solid #555;
+    }
+
+    .vertical-nav li:last-child {
+      border-bottom: none;
+    }
+
+    .vertical-nav a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 15px 20px;
+    }
+
+    .vertical-nav a:hover {
+      background-color: #555;
+    }
+
+    .user-circle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 60px;
+      height: 60px;
+      background-color: #555;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 25px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 60px; 
+      right: 15px;
+      background-color: #333;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      font-size: 20px;
+    }
+
+    .dropdown a, button {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 0;
+      font-size: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="vertical-nav">
+    <ul>
+      <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li>
+      <li><a href="#">Evaluation Form</a></li>
+      <li><a href="#">Out of Office Forms</a></li>
+      <li><a href="#">Equipment Management</a></li>
+      <li><a href="#">Clock In - Clock Out</a></li>
+      <li><a href="#">Office Hierarchy</a></li>
+    </ul>
+  </nav>
+  <div class="top-card">
+    @{
+        string username = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            int atIndex = email.IndexOf('@');
+            if (atIndex != -1)
+            {
+                username = email.Substring(0, atIndex);
+            }
+            else
+            {
+                username = email;
+            }
+        }
+    }
+    Hello, @username!
+    
+    <div class="user-circle" onclick="toggleDropdown()" style="text-transform: uppercase;"> @{
+        string userId = "";
+        if (User.Identity.IsAuthenticated)
+        {
+            string email = User.Identity.Name;
+            userId = (email.Substring(0, 2));
+        }
+    }@userId</div>
+    <div class="dropdown" id="dropdown">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <form method="post" action="/Identity/Account/Logout?returnUrl=%2F%3Fpage%3D%252F">
+            <button type="submit">Logout</button>
+            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GyLmV4KFLdArRhzajXzKj5pK8-Q8iTNUcDOAQKXCTt2iX7hYPlWfzVstx66tJBv-GFtuBssjXOz-0Hpwq4W9ozjcP4DMq9kGpiKW_zGvpbhJAcv8A50Ob2hsbMyce1aoJTWBAKRJv3i6fjK4f7OS2cTwropgRy-P4CLtskhpF2lJMRd5aY4j0W9Z-Ba97OY4w">
+        </form>
+
+            
+    </div>
+  </div>
+
+
+
+   <script>
+    function toggleDropdown() {
+      var dropdown = document.getElementById("dropdown");
+      if (dropdown.style.display === "none" || dropdown.style.display === "") {
+        dropdown.style.display = "block";
+      } else {
+        dropdown.style.display = "none";
+      }
+    }
+
+  
+  </script>
+
+</body>

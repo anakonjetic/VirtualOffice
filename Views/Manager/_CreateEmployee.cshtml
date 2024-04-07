@@ -1,0 +1,50 @@
+﻿@model VirtualOffice.Models.Employee
+
+<form asp-action="Create" asp-controller="Manager" method="post">
+	<div class="form-group">
+		<label class="control-label">First name</label>
+		<input asp-for="FirstName" class="form-control" />
+		<span asp-validation-for="FirstName" class="text-danger"></span>
+	</div>
+	<br/>
+	<div class="form-group">
+		<label class="control-label">Last name</label>
+		<input asp-for="LastName" class="form-control" />
+		<span asp-validation-for="LastName" class="text-danger"></span>
+	</div>
+	<br />
+	<div class="form-group">
+		<label class="control-label">Date of Birth</label>
+		<input asp-for="DateOfBirth" class="form-control">
+		<span asp-validation-for="DateOfBirth" class="text-danger"></span>
+	</div>
+	<br />
+	<div class="form-group">
+		<label class="control-label">Team</label>
+		<select asp-for="TeamId">
+			<option value=1>Development</option>
+			<option value=2>Marketing</option>
+			<option value=3>Finance</option>
+			<option value=4>Retail</option>
+			<option value=5>Administration</option>
+		</select>
+		<span asp-validation-for="TeamId" class="text-danger"></span>
+	</div>
+	<br />
+	<div class="form-group">
+		<label class="control-label">Equipment</label>
+		<input asp-for="EquipmentId" class="form-control" />
+		<span asp-validation-for="EquipmentId" class="text-danger"></span>
+	</div>
+	<br />
+	<div class="form-group">
+		<label class="control-label">Email</label>
+		<input asp-for="UserId" class="form-control" />
+		<span asp-validation-for="UserId" class="text-danger"></span>
+	</div>
+	<br />
+	<div class="form-group">
+		<button type="submit" class="btn btn-outline-success">Save</button>
+	</div>
+</form>
+
