@@ -1,4 +1,5 @@
-﻿@model Team
+﻿@using VirtualOffice.Controllers
+@model TeamViewModel
 @{
     var managers = ViewData["Managers"] as List<Employee>;
     var selectedManager = ViewData["SelectedManager"] as Employee;
@@ -80,10 +81,21 @@ else
         <div class="input-group-prepend">
             <label class="input-group-text" for="inputManager">Manager</label>
         </div>
-        <select asp-for="Employee" class="custom-select" id="inputManager">
+        <select asp-for="ManagerId" class="custom-select" id="inputManager">
             @foreach (var manager in selectedManagers)
             {
                 <option value="@manager.Value" selected="@manager.Selected">@manager.Text</option>
+            }
+        </select>
+    </div>
+     <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputEmployees">Employees</label>
+        </div>
+        <select asp-for="SelectedEmployeeIds" multiple class="custom-select" id="inputEmployees">
+            @foreach (var employee in availableEmployees)
+            {
+                <option value="@employee.Id">@employee.FirstName @employee.LastName</option>
             }
         </select>
     </div>

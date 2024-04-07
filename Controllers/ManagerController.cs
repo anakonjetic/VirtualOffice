@@ -291,34 +291,42 @@ namespace VirtualOffice.Controllers
 
         public IActionResult TeamCreate()
         {
+            List<int> employeeIdsWithManagers = _dbContext.EmployeeManager
+                .Select(em => em.ManagerId)
+                .ToList();
+
             var managers = _dbContext.Employee.ToList();
+            var employees = _dbContext.Employee
+                .Where(e => !employeeIdsWithManagers.Contains(e.Id))
+                .ToList();
+
 
             ViewData["Managers"] = managers;
+            ViewData["Employees"] = employees;
 
             return PartialView("_TeamCreate", null);
         }
 
-        public IActionResult SaveTeam(int id)
+        public IActionResult SaveTeam(TeamViewModel model)
         {
             Team team;
 
-            if (id == 0) {
+            if (model.Id == 0) {
                 team = new Team();
 
-                var teamName = Request.Form["Name"];
-                team.Name = teamName;               
+                team.Name = model.Name;
 
-                var selectedManagerId = int.Parse(Request.Form["Employee"]);
+                var selectedManagerId = model.ManagerId;
 
                 var selectedManager = _dbContext.Employee
                     .Where(em => em.Id == selectedManagerId)
                     .SingleOrDefault();
 
-                
+                List<Employee> teamEmployees = _dbContext.Employee
+                       .Where(e => model.SelectedEmployeeIds.Contains(e.Id))
+                       .ToList();
 
-                var teamEmployees = new List<Employee>();
-
-                team.Employee = teamEmployees;
+               
 
                 var employeeManager = new EmployeeManager
                 {
@@ -335,11 +343,16 @@ namespace VirtualOffice.Controllers
 
                 selectedManager.TeamId = team.Id;
 
+                foreach (var teamEmployee in teamEmployees)
+                {
+                    teamEmployee.TeamId = team.Id;
+                }
+
                 var employeesToRemove = _dbContext.EmployeeManager
                            .Where(em => em.EmployeeId == selectedManagerId && _dbContext.Employee.Any(e => e.TeamId == team.Id))
                            .ToList();
 
-                _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
+                _dbContext.EmployeeManager.RemoveRange(employeesToRemove);               
 
                 _dbContext.SaveChanges();
 
@@ -348,7 +361,7 @@ namespace VirtualOffice.Controllers
             {
                 team = _dbContext.Team
                        .Include(t => t.Employee)
-                       .FirstOrDefault(t => t.Id == id);
+                       .FirstOrDefault(t => t.Id == model.Id);
 
                 var teamName = Request.Form["Name"];
                 team.Name = teamName;
@@ -410,6 +423,7 @@ namespace VirtualOffice.Controllers
 
         public IActionResult TeamDelete(int teamId)
         {
+            string loggedInUserId = User.Identity.Name;
             var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
            
 
@@ -423,9 +437,32 @@ namespace VirtualOffice.Controllers
             _dbContext.SaveChanges();
 
             _dbContext.Remove(team);
+
+            var managementToDelete = _dbContext.EmployeeManager
+                .Where(e => e.ManagerId == e.EmployeeId)
+                .ToList();
+
+            _dbContext.RemoveRange(managementToDelete);
+
             _dbContext.SaveChanges();
 
-            return PartialView("ManagerHomePage", "team");
+            var teamModel = GetAllTeamData();
+
+            var employees = GetAllEmployees();
+
+            var teamManagers = GetManagersByTeam(null);
+
+            var managedTeamIds = GetTeamManagementModel(loggedInUserId);
+            
+            var teamManagementModel = new TeamManagementWrapperModel
+            {
+                TeamList = teamModel,
+                IntList = managedTeamIds,
+                ManagerNames = teamManagers
+            };
+
+
+            return PartialView("_ManagerTeamTable", teamManagementModel);
         }
 
 
@@ -669,5 +706,15 @@ namespace VirtualOffice.Controllers
 
     }
 
-   
+    public class TeamViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int ManagerId { get; set; }
+        public List<int> SelectedEmployeeIds { get; set; }
+        public List<Employee> Managers { get; set; }
+        public List<Employee> AvailableEmployees { get; set; }
+    }
+
+
 }
