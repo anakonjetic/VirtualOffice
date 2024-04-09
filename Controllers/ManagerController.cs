@@ -16,7 +16,7 @@ namespace VirtualOffice.Controllers
         public ManagerController(ApplicationDbContext dbContext)
         {
             this._dbContext = dbContext;
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Or LicenseContext.Commercial for commercial use
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; 
 
         }
 

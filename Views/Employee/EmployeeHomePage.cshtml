@@ -9,9 +9,10 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <title>Vertical Navigation</title>
+  <title>Virtual Office - Employee</title>
   <style>
     body {
       margin: 0;
@@ -123,7 +124,7 @@
         <ul>
             <li><a href="#" data-target="home">Home</a></li>
             <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
-            <li><a href="#" data-target="office">Out of Office Forms</a></li>
+            <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
             <li><a href="#" data-target="equipment">Equipment Management</a></li>
             <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
         </ul>
@@ -244,6 +245,7 @@
         });
     }
 
+
     function formatDate(date) {
         var hours = date.getHours();
         var minutes = date.getMinutes();
@@ -273,6 +275,22 @@
         });
     }
     //logika za loadanje partiala u content2 --end
+
+    //create request (out of office) logika --start
+
+     function createRequest() {
+      const url = '@Url.Action("RequestCreate", "Employee")';
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //create request (out of office) logika --end
   </script>
 
 </body>

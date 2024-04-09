@@ -1,6 +1,29 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<p>out of office</p>
+﻿
+<div class="col">
+			<button type="button" onclick="createRequest()" class="btn btn-success">NEW REQUEST</button>
+</div>
+<table class="table" id="tableContainer">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Summary</th>
+			<th>Type</th>
+			<th>Status</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var request in Model)
+		{
+			<tr>
+                <td>@request.Id</td>
+                <td>@request.Type</td>
+				<td>
+					<p onclick="loadTeamDetailView(@request.Id)"  style="text-decoration:underline;">@request.Summary</p>
+				</td>
+				<td>@request.Status</td>
+			
+			</tr>
+		}
+	</tbody>
+</table>
