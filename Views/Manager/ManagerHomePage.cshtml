@@ -132,6 +132,7 @@
       <li><a href="#" data-target="employee">Employee Management</a></li>
       <li><a href="#" data-target="team">Team Management</a></li>
       <li><a href="#" data-target="export">Data Export</a></li>
+      <li><a href="#" data-target="create">Create employee</a></li>
     </ul>
   </nav>
   <div class="top-card">
@@ -263,6 +264,20 @@
         });
     }
     //loadanje edit team partiala u content div --end
+
+    //loadanje edit employee partiala u content div --start
+    function loadEditView(modelId){
+        const url = '@Url.Action("Edit", "Manager")?modelId=' + modelId;
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('content').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+    }
+    //loadanje edit employee partiala u content div --end
 
     //loadanje details team partiala u content div --start
     function loadTeamDetailView(teamId) {
