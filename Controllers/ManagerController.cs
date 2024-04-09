@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System.Diagnostics;
+using System.Text;
 using VirtualOffice.Data;
 using VirtualOffice.Models;
 
@@ -11,11 +13,13 @@ namespace VirtualOffice.Controllers
     {
 
         private ApplicationDbContext _dbContext;
+        private UserManager<IdentityUser> _userManager;
         private DateTime? clockInTime; // Variable to store clock in time
 
-        public ManagerController(ApplicationDbContext dbContext)
+        public ManagerController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
         {
             this._dbContext = dbContext;
+            this._userManager = userManager;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Or LicenseContext.Commercial for commercial use
 
         }
@@ -96,6 +100,8 @@ namespace VirtualOffice.Controllers
                     return PartialView("_ManagerTeamTable", teamManagementModel);
                 case "export":
                     return PartialView("_ManagerDataExport", dataExport);
+                case "create":
+                    return PartialView("_CreateEmployee");
 
                 default:
                     return PartialView("_ManagerHome");
@@ -506,6 +512,122 @@ namespace VirtualOffice.Controllers
 
 
             return PartialView("_ManagerTeamTable", teamManagementModel);
+        }
+
+        [HttpPost]
+        public IActionResult Create(Employee model)
+        {
+            ModelState.Clear();
+            model.SickLeaveDaysUsed = 0;
+            model.RemainingDaysOff = 25;
+            model.EquipmentId = string.Concat(model.EquipmentId, "1#4#6");
+
+            string genEmail = string.Concat(model.FirstName.Substring(0, 1).ToLower(), model.LastName.ToLower());
+            model.UserId = string.Concat(genEmail, "@tvz.hr");
+
+            if (ModelState.IsValid)
+            {
+                this._dbContext.Employee.Add(model);
+                this._dbContext.SaveChanges();
+
+                var manager = new EmployeeManager();
+                if (model.TeamId == 4)
+                {
+                    manager.ManagerId = 14;
+                }
+                else if (model.TeamId == 5)
+                {
+                    manager.ManagerId = 15;
+                }
+                else
+                {
+                    manager.ManagerId = model.TeamId;
+                }
+                manager.EmployeeId = model.Id;
+
+                this._dbContext.EmployeeManager.Add(manager);
+                this._dbContext.SaveChanges();
+
+                return CreateNewUser(model).GetAwaiter().GetResult();
+
+            }
+            else
+            {
+                return View("ManagerHomePage", "employee");
+            }
+        }
+
+        public async Task<IActionResult> CreateNewUser(Employee model)
+        {
+            var newUser = new IdentityUser
+            {
+                UserName = model.UserId,
+                Email = model.UserId
+            };
+
+            string password = model.UserId.Substring(0, model.UserId.Length - 7);
+
+            StringBuilder strB = new StringBuilder(password);
+
+            strB[1] = char.ToUpper(password[1]);
+            strB.Append("01@");
+
+            var result = await _userManager.CreateAsync(newUser, strB.ToString());
+
+            if (result.Succeeded)
+            {
+                return View("ManagerHomePage", "employee");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View("ManagerHomePage", "team");
+            }
+        }
+
+        public IActionResult Edit(int modelId)
+        {
+            var model = _dbContext.Employee.FirstOrDefault(c => c.Id == modelId);
+            return PartialView("_EditEmployee", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveEmployee(int id)
+        {
+            var model = this._dbContext.Employee.Single(d => d.Id == id);
+            var ok = await this.TryUpdateModelAsync(model);
+
+            if (ok && this.ModelState.IsValid)
+            {
+                this._dbContext.SaveChanges();
+                return View("ManagerHomePage", "employee");
+            }
+
+            return View("ManagerHomePage", "employee");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var employee = this._dbContext.Employee
+                .Where(p => p.Id == id)
+                .FirstOrDefault();
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            var employeeManager = this._dbContext.EmployeeManager
+                .Where(p => p.EmployeeId == id);
+
+            this._dbContext.EmployeeManager.RemoveRange(employeeManager);
+            this._dbContext.Employee.Remove(employee);
+            this._dbContext.SaveChanges();
+
+            return View("ManagerHomePage", "employee");
         }
 
 
