@@ -24,10 +24,12 @@ namespace VirtualOffice.Controllers
         public IActionResult LoadPartialView(string target)
         {
 
+            //dohvaćanje podataka za model poslan u partial view --start
 
-            Console.WriteLine("Target received in LoadPartialView action: " + target);
+            var requestModel = setRequestTableModel();
 
-           
+            //dohvaćanje podataka za model poslan u partial view --end
+
             switch (target)
             {
                 case "home":
@@ -39,7 +41,7 @@ namespace VirtualOffice.Controllers
                 case "equipment":
                     return PartialView("_EmployeeEquipment");
                 case "outOfOffice":
-                    return PartialView("_EmployeeOutOfOffice");
+                    return PartialView("_EmployeeOutOfOffice", requestModel);
 
                 default:
                     return NotFound();
@@ -108,6 +110,140 @@ namespace VirtualOffice.Controllers
 
             return Json(new { success = true, timeWorked = timeWorked.ToString(@"hh\:mm\:ss") });
         }
+
+        public IActionResult RequestCreate()
+        {
+            var requestOoOViewModel = new RequestOoOViewModel
+            {
+                RequestTypes = _dbContext.RequestType.Where(r => r.Id == 1 || r.Id == 2).ToList(),
+                
+            };
+
+            return PartialView("_EmployeeCreateOoORequest", requestOoOViewModel);
+        }
+
+        public IActionResult SaveOoORequest(RequestOoOViewModel model)
+        {
+            string loggedInUserId = User.Identity.Name;
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            var lastReq = _dbContext.Request.OrderByDescending(r => r.Id).FirstOrDefault();
+            var reqId = 0;
+
+            if (lastReq != null)
+            {
+                reqId = Int32.Parse(lastReq.Id) + 1;
+            }
+            else
+            {
+                reqId = 1;
+            }
+
+            var request = new Request
+            {
+                Id = reqId.ToString(),
+                EmployeeId = loggedInEmployee.Id,
+                CreatedDate = DateTime.Now,
+                ManagerId = 1,
+                StatusId = 1, /*NEW*/
+                RequestTypeID = model.RequestTypeID,
+                Summary = model.Summary,
+                AdditionalInfo = model.AdditionalInfo,
+                Quantity = model.Quantity
+            };
+
+            _dbContext.Request.Add(request);
+
+            _dbContext.SaveChanges();
+
+            return PartialView("EmployeeHomePage", "outOfOffice");
+        }
+
+        public IActionResult SendRequestToApproval(int requestId)
+        {
+            var requestToUpdate = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            if (requestToUpdate != null)
+            {
+                requestToUpdate.StatusId = 2; /*In progress*/
+                _dbContext.SaveChanges();
+            }
+
+            var requestModel = setRequestTableModel();
+
+            return PartialView("_EmployeeOutOfOffice", requestModel);
+        }
+
+        public IActionResult DeleteOoORequest(int requestId)
+        {
+            var requestToUpdate = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            if (requestToUpdate != null)
+            {
+                _dbContext.Remove(requestToUpdate);
+                _dbContext.SaveChanges();
+            }
+
+            var requestModel = setRequestTableModel();
+
+            return PartialView("_EmployeeOutOfOffice", requestModel);
+        }
+
+
+        public List<RequestWrapperModel> setRequestTableModel()
+        {
+            string loggedInUserId = User.Identity.Name;
+
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            var requests = _dbContext.Request
+                .Where(r => r.EmployeeId == loggedInEmployee.Id)
+                .ToList();
+
+            var wrapperModels = new List<RequestWrapperModel>();
+
+            foreach(var request in requests)
+            {
+                var requestModel = new RequestWrapperModel
+                {
+                    Id = request.Id,
+                    Summary = request.Summary,
+                    Type = _dbContext.RequestType.Where(t => t.Id == request.RequestTypeID).FirstOrDefault()?.Name,
+                    Status = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name,
+                    SendToApproval = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name == "New" ? true : false
+                };
+
+                wrapperModels.Add(requestModel);
+            }
+
+            return wrapperModels;
+        }
+
+        
+
+        public class RequestWrapperModel
+        {
+            public string Id { get; set; }
+            public string Summary { get; set; }
+            public string Type { get; set; }
+            public string Status { get; set; }
+
+            public bool SendToApproval { get; set; }
+
+        }
+        
+        public class RequestOoOViewModel
+        {
+            public int RequestTypeID { get; set; }
+
+            public List<RequestType> RequestTypes { get; set; }
+
+            public string Summary { get; set; }
+
+            public string AdditionalInfo { get; set; }
+            public int Quantity { get; set; }
+        }
+
     }
 
 
