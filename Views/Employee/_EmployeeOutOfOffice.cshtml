@@ -1,5 +1,6 @@
 ﻿
-<div class="col">
+
+<div class="col" style="margin-bottom:20px;">
 			<button type="button" onclick="createRequest()" class="btn btn-success">NEW REQUEST</button>
 </div>
 <table class="table" id="tableContainer">
@@ -24,7 +25,7 @@
 					@if (@request.SendToApproval == true)
 					{
 					  <a href="#" onclick="sendOoOToApproval(@request.Id)">[send to approval]</a>
-					  <a href="#" onclick="deleteOoORequest(@request.Id)">[x]</a>
+					  <a href="#" onclick="deleteNewOoORequest(@request.Id)">[x]</a>
 					}					
 				</td>
 			</tr>

@@ -174,6 +174,21 @@ namespace VirtualOffice.Controllers
             return PartialView("_EmployeeOutOfOffice", requestModel);
         }
 
+        public IActionResult DeleteOoORequest(int requestId)
+        {
+            var requestToUpdate = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            if (requestToUpdate != null)
+            {
+                _dbContext.Remove(requestToUpdate);
+                _dbContext.SaveChanges();
+            }
+
+            var requestModel = setRequestTableModel();
+
+            return PartialView("_EmployeeOutOfOffice", requestModel);
+        }
+
 
         public List<RequestWrapperModel> setRequestTableModel()
         {

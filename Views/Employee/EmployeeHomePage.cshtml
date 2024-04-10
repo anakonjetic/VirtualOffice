@@ -307,6 +307,22 @@
     }
 
     //pošalji request na manager approval --end
+
+    //obriši OoO request --start
+
+    function deleteNewOoORequest(requestId) {
+      const url = '@Url.Action("DeleteOoORequest", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //obriši OoO request --end
   </script>
 
 </body>
