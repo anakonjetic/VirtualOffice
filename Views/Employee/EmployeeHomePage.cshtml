@@ -291,6 +291,22 @@
     }
 
     //create request (out of office) logika --end
+
+    //pošalji request na manager approval --start
+
+    function sendOoOToApproval(requestId) {
+      const url = '@Url.Action("SendRequestToApproval", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //pošalji request na manager approval --end
   </script>
 
 </body>

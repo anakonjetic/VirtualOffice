@@ -17,12 +17,16 @@
 		{
 			<tr>
                 <td>@request.Id</td>
-                <td>@request.Type</td>
-				<td>
-					<p onclick="loadTeamDetailView(@request.Id)"  style="text-decoration:underline;">@request.Summary</p>
-				</td>
+                <td><p onclick="loadOoODetailView(@request.Id)"  style="text-decoration:underline;">@request.Summary</p></td>
+				<td>@request.Type</td>
 				<td>@request.Status</td>
-			
+				<td>
+					@if (@request.SendToApproval == true)
+					{
+					  <a href="#" onclick="sendOoOToApproval(@request.Id)">[send to approval]</a>
+					  <a href="#" onclick="deleteOoORequest(@request.Id)">[x]</a>
+					}					
+				</td>
 			</tr>
 		}
 	</tbody>

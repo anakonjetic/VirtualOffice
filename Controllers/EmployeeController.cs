@@ -127,9 +127,21 @@ namespace VirtualOffice.Controllers
             string loggedInUserId = User.Identity.Name;
             Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
 
+            var lastReq = _dbContext.Request.OrderByDescending(r => r.Id).FirstOrDefault();
+            var reqId = 0;
+
+            if (lastReq != null)
+            {
+                reqId = Int32.Parse(lastReq.Id) + 1;
+            }
+            else
+            {
+                reqId = 1;
+            }
+
             var request = new Request
             {
-                Id = "0",
+                Id = reqId.ToString(),
                 EmployeeId = loggedInEmployee.Id,
                 CreatedDate = DateTime.Now,
                 ManagerId = 1,
@@ -146,6 +158,22 @@ namespace VirtualOffice.Controllers
 
             return PartialView("EmployeeHomePage", "outOfOffice");
         }
+
+        public IActionResult SendRequestToApproval(int requestId)
+        {
+            var requestToUpdate = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            if (requestToUpdate != null)
+            {
+                requestToUpdate.StatusId = 2; /*In progress*/
+                _dbContext.SaveChanges();
+            }
+
+            var requestModel = setRequestTableModel();
+
+            return PartialView("_EmployeeOutOfOffice", requestModel);
+        }
+
 
         public List<RequestWrapperModel> setRequestTableModel()
         {
@@ -166,7 +194,8 @@ namespace VirtualOffice.Controllers
                     Id = request.Id,
                     Summary = request.Summary,
                     Type = _dbContext.RequestType.Where(t => t.Id == request.RequestTypeID).FirstOrDefault()?.Name,
-                    Status = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name
+                    Status = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name,
+                    SendToApproval = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name == "New" ? true : false
                 };
 
                 wrapperModels.Add(requestModel);
@@ -175,12 +204,16 @@ namespace VirtualOffice.Controllers
             return wrapperModels;
         }
 
+        
+
         public class RequestWrapperModel
         {
             public string Id { get; set; }
             public string Summary { get; set; }
             public string Type { get; set; }
             public string Status { get; set; }
+
+            public bool SendToApproval { get; set; }
 
         }
         
