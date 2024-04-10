@@ -189,6 +189,21 @@ namespace VirtualOffice.Controllers
             return PartialView("_EmployeeOutOfOffice", requestModel);
         }
 
+        public IActionResult RequestOoODetails(int requestId)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            var requestModel = new RequestOoOViewModel
+            {
+                RequestTypeID = request.RequestTypeID,
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id == 1 || rt.Id == 2 || rt.Id == 3 || rt.Id == 4).ToList(),
+                Summary = request.Summary,
+                AdditionalInfo = request.AdditionalInfo,
+                Quantity = (int)request.Quantity
+            };
+
+            return PartialView("_EmployeeOoOSummary", requestModel);
+        }
 
         public List<RequestWrapperModel> setRequestTableModel()
         {

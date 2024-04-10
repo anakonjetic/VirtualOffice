@@ -323,6 +323,25 @@
     }
 
     //obriši OoO request --end
+
+    //loadanje request ooo summary --start
+
+     function loadRequestOoODetailView(requestId) {
+      const url = '@Url.Action("RequestOoODetails", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //loadanje request ooo summary --end
+
+
+
   </script>
 
 </body>
