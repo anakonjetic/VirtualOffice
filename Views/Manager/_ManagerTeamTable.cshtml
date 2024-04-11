@@ -35,24 +35,60 @@
             text-decoration: none;
         }
 
+        /* Hide the input initially */
+        .edit-form {
+            display: none;
+        }
+
+        .edit-toggle:checked + .edit-link + .edit-form {
+            display: block;
+        }
+
+        /* Save button styles */
+        .save-btn {
+            margin-top: 10px;
+        }
     </style>
 </head>
-<body>
-    <div class="card-container">
-        @foreach (var team in Model.TeamList)
-        {
-            <a href="@Url.Action("TeamSummary", "Manager", new { teamId = team.Id })" class="team-card">
-                <h4>@team.Name</h4>
-                <p>Team ID: @team.Id</p>
-                @if (Model.IntList.Contains(team.Id))
+
+<div style="margin-top: 20px; margin-bottom: 10px;">
+	<partial name="_TeamFilter" model="new TeamFilterModel()" />
+</div>
+
+
+
+
+<table class="table" id="tableContainer">
+	<thead>
+		<tr>
+			<th onclick="sortTeams('id')">ID</th>
+			<th onclick="sortTeams('name')">Team</th>
+			<th>Manager</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var team in Model.TeamList)
+		{
+			<tr>
+                <td>@team.Id</td>
+				<td>
+					<p onclick="loadTeamDetailView(@team.Id)"  style="text-decoration:underline;">@team.Name</p>
+				</td>
+				<td>@Model.ManagerNames[Model.TeamList.IndexOf(team)]</td>
+				<td>
+				@if (Model.IntList.Contains(team.Id))
                 {
-                    <p href="@Url.Action("EditTeam", "Manager", new { teamId = team.Id })"><!--<a href="@Url.Action("EditTeam", "Manager", new { teamId = team.Id })" class="team-link">-->Edit</p>
+                  <a href="#" onclick="loadTeamEditView(@team.Id)">[edit]</a>
+                  <a href="#" onclick="deleteTeam(@team.Id)">[x]</a>
+
                 }
                 else
                 {
                     <p>No permission</p>
                 }
-            </a>
-        }
-    </div>
-</body>
+			</td>
+			</tr>
+		}
+	</tbody>
+</table>

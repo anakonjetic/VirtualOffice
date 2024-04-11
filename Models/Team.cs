@@ -11,4 +11,9 @@ namespace VirtualOffice.Models
 
         public virtual ICollection<Employee>? Employee { get; set; }
     }
+
+    public class TeamFilterModel
+    {
+        public string Name { get; set; }
+    }
 }

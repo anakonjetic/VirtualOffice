@@ -1,7 +1,38 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using VirtualOffice.Controllers
+@model TeamDetailsWrapperModel
 
-<p>summary</p>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="#" onclick="loadPartialView('team')">Team Table</a></li>
+		<li class="breadcrumb-item active" aria-current="page">@Model.Team.Name</li>
+	</ol>
+</nav>
+
+<h3>Team @Model.Team.Id - @Model.Team.Name</h3>
+<table style="margin-top: 20px;" class="table">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Remaining Days Off</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var employee in Model.Employees)
+		{
+			<tr>
+                <td>@employee.Id</td>
+				<td>
+					<p>@employee.FirstName</p>
+				</td>
+                <td>
+					<p>@employee.LastName</p>
+				</td>
+                <td>
+					<p>@employee.RemainingDaysOff</p>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

@@ -4,11 +4,15 @@
     Layout = null; // Remove layout inheritance
     Layout = "";
 }
+
+@model string
+
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <title>Vertical Navigation</title>
+  <title>Virtual Office - Employee</title>
   <style>
     body {
       margin: 0;
@@ -115,22 +119,12 @@
 
   </style>
 </head>
-<body>
-@*   <nav class="vertical-nav">
-    <ul>
-      <li><a href="#" data-target="home">Home</a></li>
-      <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
-      <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
-      <li><a href="#" data-target="equipment">Equipment Management</a></li>
-      <li><a href="#" data-target="clockIn">Clock In - Clock Out</a></li>
-    </ul>
-  </nav> *@
+<body> 
     <nav class="vertical-nav">
         <ul>
-            @* <li><a href="@Url.Action("EmployeeHomePage", "Employee")">Home</a></li> *@
             <li><a href="#" data-target="home">Home</a></li>
             <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
-            <li><a href="#" data-target="office">Out of Office Forms</a></li>
+            <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
             <li><a href="#" data-target="equipment">Equipment Management</a></li>
             <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
         </ul>
@@ -175,6 +169,20 @@
 
 
    <script>
+
+    //loadanje partiala po loadanju stranice --start
+       document.addEventListener("DOMContentLoaded", function () {
+       
+        var modelString = '@Model';
+        if (modelString.trim() !== '') {
+            loadPartialViewEmployee(modelString);
+        }else{
+            loadPartialViewEmployee('home')
+        }       
+        });
+        //loadanje partiala po loadanju stranice --end
+
+    //dropdown za logout --start
     function toggleDropdown() {
       var dropdown = document.getElementById("dropdown");
       if (dropdown.style.display === "none" || dropdown.style.display === "") {
@@ -183,7 +191,9 @@
         dropdown.style.display = "none";
       }
     }
+    //dropdown za logout --end
 
+    //trigger za navigaciju --start
     document.querySelectorAll('.vertical-nav a').forEach(item => {
         item.addEventListener('click', event => {
             event.preventDefault();
@@ -191,6 +201,7 @@
             loadPartialViewEmployee(target);
         });
     });
+    //trigger za navigaciju --end
 
     function clockIn() {
         $.ajax({
@@ -234,6 +245,7 @@
         });
     }
 
+
     function formatDate(date) {
         var hours = date.getHours();
         var minutes = date.getMinutes();
@@ -249,6 +261,8 @@
         // Display error message to the user
         $('#clockDisplay').text(message);
     }
+
+    //logika za loadanje partiala u content2 --start
     function loadPartialViewEmployee(target) {
       const url = '@Url.Action("LoadPartialView", "Employee")?target=' + target;
       fetch(url)
@@ -260,7 +274,74 @@
           console.error('Error:', error);
         });
     }
-  
+    //logika za loadanje partiala u content2 --end
+
+    //create request (out of office) logika --start
+
+     function createRequest() {
+      const url = '@Url.Action("RequestCreate", "Employee")';
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //create request (out of office) logika --end
+
+    //pošalji request na manager approval --start
+
+    function sendOoOToApproval(requestId) {
+      const url = '@Url.Action("SendRequestToApproval", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //pošalji request na manager approval --end
+
+    //obriši OoO request --start
+
+    function deleteNewOoORequest(requestId) {
+      const url = '@Url.Action("DeleteOoORequest", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //obriši OoO request --end
+
+    //loadanje request ooo summary --start
+
+     function loadRequestOoODetailView(requestId) {
+      const url = '@Url.Action("RequestOoODetails", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //loadanje request ooo summary --end
+
+
+
   </script>
 
 </body>

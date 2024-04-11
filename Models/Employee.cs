@@ -24,6 +24,8 @@ namespace VirtualOffice.Models
 
         public virtual ICollection<EmployeeManager>? ManagedEmployees { get; set; }
         public virtual ICollection<EmployeeManager>? ManagingEmployees { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
     }
 
     public class EmployeeManager
