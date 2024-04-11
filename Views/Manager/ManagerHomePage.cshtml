@@ -131,6 +131,7 @@
       <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
       <li><a href="#" data-target="employee">Employee Management</a></li>
       <li><a href="#" data-target="team">Team Management</a></li>
+      <li><a href="#" data-target="list">List of Employees</a></li>
       <li><a href="#" data-target="export">Data Export</a></li>
       <li><a href="#" data-target="create">Create employee</a></li>
     </ul>
@@ -423,7 +424,132 @@
         $('#clockDisplay').text(message);
     }
 
-   
+    var sortDirection = ''; // Default sorting direction
+    function sortTable(n) {
+        var table, rows, switching, i, shouldSwitch;
+        table = document.getElementById("employeeTable");
+        switching = true;
+
+        // If sortDirection is not defined, set it to 'asc'
+        if (!sortDirection) {
+            sortDirection = 'asc';
+        }
+
+        // Toggle sorting direction
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+
+        console.log("Sort direction:", sortDirection); // Debugging: Log the sort direction
+
+        // Remove all sort indicators
+        var sortIndicators = document.querySelectorAll('.sortable-column .sort-indicator');
+        sortIndicators.forEach(function (indicator) {
+            indicator.textContent = '↓'; // Reset to default downward arrow
+        });
+
+        // Set the appropriate sort indicator
+        var currentIndicator = document.querySelector('.sortable-column:nth-child(' + (n + 1) + ') .sort-indicator');
+        currentIndicator.textContent = sortDirection === 'asc' ? '↓' : '↑'; // Set arrow direction
+
+        // Sorting logic
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                var x = rows[i].getElementsByTagName("td")[n];
+                var y = rows[i + 1].getElementsByTagName("td")[n];
+
+                // Handle sorting for ID column
+                if (n === 0) {
+                    if (sortDirection === 'asc') {
+                        if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (parseInt(x.innerHTML) < parseInt(y.innerHTML)) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                } else if (n === 5) { // Handle sorting for "Sick Leave Days Used" column
+                    var valueX = parseInt(x.innerHTML);
+                    var valueY = parseInt(y.innerHTML);
+
+                    if (isNaN(valueX) || isNaN(valueY)) {
+                        // Handle parsing errors
+                        continue;
+                    }
+
+                    if (sortDirection === 'asc') {
+                        if (valueX > valueY) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        if (valueX < valueY) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                } else {
+                    // For other columns, handle sorting as before
+                    if ((sortDirection === 'asc' && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) ||
+                        (sortDirection === 'desc' && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase())) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
+    function searchEmployees() {
+        var input, filter, table, tr, tdFirstName, tdLastName, tdRemainingDaysOff, tdSickLeaveDaysUsed, tdEquipment, tdTeam, tdUserId, i, txtValueFirstName, txtValueLastName, txtValueRemainingDaysOff, txtValueSickLeaveDaysUsed, txtValueEquipment, txtValueTeam, txtValueUserId;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("employeeTable");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            tdFirstName = tr[i].getElementsByTagName("td")[1]; // First name column
+            tdLastName = tr[i].getElementsByTagName("td")[2]; // Last name column
+            tdRemainingDaysOff = tr[i].getElementsByTagName("td")[4]; // Remaining Days Off column
+            tdSickLeaveDaysUsed = tr[i].getElementsByTagName("td")[5]; // Sick Leave Days Used column
+            tdEquipment = tr[i].getElementsByTagName("td")[6]; // Equipment column
+            tdTeam = tr[i].getElementsByTagName("td")[7]; // Team column
+            tdUserId = tr[i].getElementsByTagName("td")[8]; // User ID column
+            if (tdFirstName && tdLastName && tdRemainingDaysOff && tdSickLeaveDaysUsed && tdEquipment && tdTeam && tdUserId) {
+                txtValueFirstName = tdFirstName.textContent || tdFirstName.innerText;
+                txtValueLastName = tdLastName.textContent || tdLastName.innerText;
+                txtValueRemainingDaysOff = tdRemainingDaysOff.textContent || tdRemainingDaysOff.innerText;
+                txtValueSickLeaveDaysUsed = tdSickLeaveDaysUsed.textContent || tdSickLeaveDaysUsed.innerText;
+                txtValueEquipment = tdEquipment.textContent || tdEquipment.innerText;
+                txtValueTeam = tdTeam.textContent || tdTeam.innerText;
+                txtValueUserId = tdUserId.textContent || tdUserId.innerText;
+                // Check if the input text matches any column value
+                if (txtValueFirstName.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueLastName.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueRemainingDaysOff.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueSickLeaveDaysUsed.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueEquipment.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueTeam.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueUserId.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = ""; // Show the row
+                } else {
+                    tr[i].style.display = "none"; // Hide the row
+                }
+            }
+        }
+    }
+
+
+
 
   </script>
 </body>
