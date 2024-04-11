@@ -424,21 +424,21 @@
         $('#clockDisplay').text(message);
     }
 
-    var sortDirection = ''; // Default sorting direction
+    var sortDirection1 = ''; // Default sorting direction
     function sortTable(n) {
         var table, rows, switching, i, shouldSwitch;
         table = document.getElementById("employeeTable");
         switching = true;
 
         // If sortDirection is not defined, set it to 'asc'
-        if (!sortDirection) {
-            sortDirection = 'asc';
+        if (!sortDirection1) {
+            sortDirection1 = 'asc';
         }
 
         // Toggle sorting direction
-        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        sortDirection1 = sortDirection1 === 'asc' ? 'desc' : 'asc';
 
-        console.log("Sort direction:", sortDirection); // Debugging: Log the sort direction
+        console.log("Sort direction:", sortDirection1); // Debugging: Log the sort direction
 
         // Remove all sort indicators
         var sortIndicators = document.querySelectorAll('.sortable-column .sort-indicator');
@@ -448,7 +448,7 @@
 
         // Set the appropriate sort indicator
         var currentIndicator = document.querySelector('.sortable-column:nth-child(' + (n + 1) + ') .sort-indicator');
-        currentIndicator.textContent = sortDirection === 'asc' ? '↓' : '↑'; // Set arrow direction
+        currentIndicator.textContent = sortDirection1 === 'asc' ? '↓' : '↑'; // Set arrow direction
 
         // Sorting logic
         while (switching) {
@@ -462,7 +462,7 @@
 
                 // Handle sorting for ID column
                 if (n === 0) {
-                    if (sortDirection === 'asc') {
+                    if (sortDirection1 === 'asc') {
                         if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
                             shouldSwitch = true;
                             break;
@@ -482,7 +482,7 @@
                         continue;
                     }
 
-                    if (sortDirection === 'asc') {
+                    if (sortDirection1 === 'asc') {
                         if (valueX > valueY) {
                             shouldSwitch = true;
                             break;
@@ -495,8 +495,8 @@
                     }
                 } else {
                     // For other columns, handle sorting as before
-                    if ((sortDirection === 'asc' && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) ||
-                        (sortDirection === 'desc' && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase())) {
+                    if ((sortDirection1 === 'asc' && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) ||
+                        (sortDirection1 === 'desc' && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase())) {
                         shouldSwitch = true;
                         break;
                     }
