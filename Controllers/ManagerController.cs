@@ -102,6 +102,8 @@ namespace VirtualOffice.Controllers
                     return PartialView("_ManagerTeamTable", teamManagementModel);
                 case "export":
                     return PartialView("_ManagerDataExport", dataExport);
+                case "list":
+                    return PartialView("_EmployeeList", dataExport);
                 case "create":
                     return PartialView("_CreateEmployee");
 

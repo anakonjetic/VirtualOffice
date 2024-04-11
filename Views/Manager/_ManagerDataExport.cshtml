@@ -1,7 +1,100 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee List</title>
+    <style>
+        .employee-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-<p>DATA EXPORT</p>
+            .employee-table th,
+            .employee-table td {
+                padding: 8px;
+                text-align: left;
+                border: 1px solid #ddd; /* Add borders to cells */
+            }
+
+            .employee-table th {
+                background-color: #f2f2f2; /* Add background color to header cells */
+            }
+
+            .employee-table tr:nth-child(even) {
+                background-color: #f2f2f2; /* Add alternate row background color */
+            }
+
+        .export-button-container {
+            text-align: center; /* Center the button horizontally */
+            margin-bottom: 20px; /* Add space between the button and the table */
+        }
+
+        .export-button {
+            background-color: #4CAF50; /* Green background */
+            border: none; /* Remove border */
+            color: white; /* White text */
+            padding: 10px 20px; /* Padding */
+            text-align: center; /* Center text */
+            text-decoration: none; /* Remove underline */
+            display: inline-block; /* Make it a block element */
+            font-size: 16px; /* Font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Add cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition for background color */
+        }
+
+            .export-button:hover {
+                background-color: #45a049; /* Darker green on hover */
+                color: white; /* White text on hover */
+                text-decoration: none; /* Remove underline on hover */
+            }
+
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Employee List</h1>
+
+    <div class="export-button-container">
+        <div class="export-button-container">
+            <button id="exportButton" class="export-button" onclick="exportToExcel()">Export to Excel</button>
+        </div>
+    </div>
+
+    <table class="employee-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date of Birth</th>
+                <th>Remaining Days Off</th>
+                <th>Sick Leave Days Used</th>
+                <th>Equipment</th>
+                <th>Team</th>
+                <th>User ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model.Employees)
+            {
+                <tr>
+                    <td>@employee.Id</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.DateOfBirth.ToShortDateString()</td>
+                    <td>@employee.RemainingDaysOff</td>
+                    <td>@employee.SickLeaveDaysUsed</td>
+                    <td>
+                        @if (Model.EquipmentNamesDictionary.ContainsKey(employee.Id))
+                        {
+                            var equipmentNames = string.Join(", ", Model.EquipmentNamesDictionary[employee.Id]);
+                            <div>@equipmentNames</div>
+                        }
+                    </td>
+                    <td>@(employee.Team != null ? employee.Team.Name : "N/A")</td>
+                    <td>@(employee.UserId != null ? employee.UserId : "N/A")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
