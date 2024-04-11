@@ -1,0 +1,96 @@
+﻿@using VirtualOffice.Controllers
+@model RequestOoOManagerViewModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialView('office')">Out of Office Table</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <p>Request Details</p>
+        </li>
+    </ol>
+</nav>
+
+<p class="input-group-prepend input-group-text" style="margin-bottom:20px;">OUT OF OFFICE REQUEST DETAILS</p>
+
+
+<form asp-action="RequestDecision" id="oooRequest" method="post">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputSummary">Summary</label>
+        </div>
+        <input type="text" asp-for="Summary" class="form-control custom-text-input" id="inputSummary" readonly />
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputAdditionalInfo">Additional Info</label>
+        </div>
+        <input type="text" asp-for="AdditionalInfo" class="form-control custom-text-input" id="inputAdditionalInfo" readonly />
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputManager">Additional Info</label>
+        </div>
+        <select asp-for="RequestTypeID" class="custom-select" id="inputRequestType" disabled>
+            @foreach (var type in @Model.RequestTypes)
+            {
+                <option value="@type.Id">@type.Name</option>
+            }
+        </select>
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputQuantity">OoO Work Days</label>
+        </div>
+        <input type="text" asp-for="Quantity" class="form-control custom-text-input" id="inputQuantity" readonly />
+    </div>
+    <br />
+    @if (@Model.RequestTypeID == 1)
+    {
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputQuantity">Remaining days off (in case the request gets approved):</label>
+            </div>
+            <input type="text" asp-for="RemainingDays" class="form-control custom-text-input" id="inputQuantity" readonly />
+        </div>
+    }
+    @if (@Model.RequestTypeID == 2)
+    {
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <p>The request needs to be approved in order to log user's sick leave.</p>
+            </div>
+
+        </div>
+    }
+    @if (@Model.IsRequestApprovable)
+    {
+        <input type="hidden" asp-for="IsApproved" id="IsApproved" />
+        <input type="hidden" asp-for="IsRejected" id="IsRejected" />
+        <div class="form-group" id="approvalButtons" style="display:block;">
+            <button type="button" onclick="approveRequest()" class="btn btn-outline-success">Approve</button>
+            <button type="button" onclick="showCommentSection()" class="btn btn-outline-danger">Decline</button>
+        </div>
+        <div id="commentSection" style="display:none;">
+        <div class="input-group mb-3" >
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputQuantity">Reason of Rejection: </label>
+            </div>
+            <input type="text" asp-for="Comment" class="form-control custom-text-input" id="inputComment" />
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    }
+    @if (@Model.IsRequestApprovable == false)
+    {
+         <div class="input-group mb-3">
+            <div class="input-group-text" style="background-color:#ffb0b0;">
+                <p>The request cannot be approved because there are not enough remaining days off!</p>
+            </div>
+
+        </div>
+        <input type="hidden" asp-for="IsApproved" value="false" id="IsApproved" />
+        <input type="hidden" asp-for="IsRejected" value="true" id="IsRejected" />
+        <input type="hidden" asp-for="Comment" value="The request cannot be approved because there are not enough remaining days off!" id="inputComment" />
+        <button type="submit" class="btn btn-primary">Submit</button>
+    }
+</form>

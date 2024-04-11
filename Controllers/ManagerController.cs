@@ -77,6 +77,8 @@ namespace VirtualOffice.Controllers
 
             };
 
+            var requestModel = setRequestTableModel();
+
             //dohvaćanje podataka za model poslan u partial view --end
 
             //dohvaćanje Partial View objekata ovisno o odabranom Nav Itemu
@@ -89,7 +91,7 @@ namespace VirtualOffice.Controllers
                 case "evaluation":
                     return PartialView("_ManagerEvaluation");
                 case "office":
-                    return PartialView("_ManagerOutOfOffice");
+                    return PartialView("_ManagerOutOfOffice", requestModel);
                 case "equipment":
                     return PartialView("_ManagerEquipmentManagement");
                 case "clock":
@@ -840,6 +842,64 @@ namespace VirtualOffice.Controllers
 
             return PartialView("_ManagerTeamTable", teamManagementModel);
         }
+
+        public IActionResult RequestOoOManagerDetails(int requestId)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            var employee = _dbContext.Employee.Where(e => e.Id == request.EmployeeId).FirstOrDefault();
+
+            var remainingDaysAfterSubstraction = request.RequestTypeID == 1 ? employee.RemainingDaysOff - request.Quantity : 0;
+
+            var approvable = remainingDaysAfterSubstraction >= 0;
+
+            var requestModel = new RequestOoOManagerViewModel
+            {
+                RequestTypeID = request.RequestTypeID,
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id == 1 || rt.Id == 2).ToList(),
+                Summary = request.Summary,
+                AdditionalInfo = request.AdditionalInfo,
+                Quantity = (int)request.Quantity,
+                RemainingDays = (int)remainingDaysAfterSubstraction,
+                IsRequestApprovable = approvable
+            };
+
+            return PartialView("_ManagerOoOSummary", requestModel);
+        }
+
+        public List<RequestManagementWrapperModel> setRequestTableModel()
+        {
+            string loggedInUserId = User.Identity.Name;
+
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            var teamId = loggedInEmployee.TeamId;
+
+            var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
+
+            var requests = _dbContext.Request
+                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1)
+                .ToList();
+
+            var wrapperModels = new List<RequestManagementWrapperModel>();
+
+            foreach (var request in requests)
+            {
+                var requestModel = new RequestManagementWrapperModel
+                {
+                    Id = request.Id,
+                    Summary = request.Summary,
+                    Type = _dbContext.RequestType.Where(t => t.Id == request.RequestTypeID).FirstOrDefault()?.Name,
+                    Status = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name,
+                    StatusId = (int)(_dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Id),
+                    CreatedDate = request.CreatedDate
+                };
+
+                wrapperModels.Add(requestModel);
+            }
+
+           return wrapperModels = wrapperModels.OrderBy(w => w.StatusId).ThenBy(w => requests.First(r => r.Id == w.Id).CreatedDate).ToList();
+        }
     }
 
     //u partial view se može slati jedan item, pa je više podataka wrappano
@@ -881,5 +941,33 @@ namespace VirtualOffice.Controllers
         public List<Employee> AvailableEmployees { get; set; }
     }
 
+    public class RequestManagementWrapperModel
+    {
+        public string Id { get; set; }
+        public string Summary { get; set; }
+        public string Type { get; set; }
+        public string Status { get; set; }
+        public int StatusId { get; set; }
 
+        public DateTime CreatedDate { get; set; }
+
+    }
+
+    public class RequestOoOManagerViewModel
+    {
+        public int RequestTypeID { get; set; }
+
+        public List<RequestType> RequestTypes { get; set; }
+
+        public string Summary { get; set; }
+
+        public string AdditionalInfo { get; set; }
+        public int Quantity { get; set; }
+        public int RemainingDays { get; set; }
+        public bool IsRequestApprovable { get; set; }
+
+        public bool? IsApproved { get; set; }
+        public bool? IsRejected { get; set; }
+        public string? Comment { get; set; }
+    }
 }
