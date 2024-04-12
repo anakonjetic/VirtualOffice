@@ -1,21 +1,125 @@
-﻿@model List<VirtualOffice.Models.Employee>
-
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Position</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var employee in Model)
-        {
-            <tr>
-                <td>@employee.FirstName</td>
-                <td>@employee.LastName</td>
-                <td>@employee.DateOfBirth</td>
-            </tr>
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee List</title>
+    <style>
+        body {
+            border-collapse: collapse;
+            width: 100%;
         }
-    </tbody>
-</table>
+
+        h1 {
+            text-align: center;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            padding: 10px 30px 10px 10px; /* Adjust padding to make space for the magnifying glass */
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 300px;
+            font-size: 16px;
+        }
+
+        #employeeTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            #employeeTable th,
+            #employeeTable td {
+                padding: 8px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            #employeeTable th {
+                background-color: #f2f2f2;
+            }
+
+            #employeeTable tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+
+        .sortable-column {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sort-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 5px;
+            opacity: 0.5;
+        }
+
+        .sort-asc .sort-indicator::after {
+            content: '\25b2' !important;
+        }
+
+        .sort-desc .sort-indicator::after {
+            content: '\25bc' !important;
+        }
+
+        .sort-asc .sort-indicator {
+            opacity: 1;
+        }
+
+        .sort-desc .sort-indicator {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee List</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="&#128269; Search for employees" oninput="searchEmployees()">
+    </div>
+
+    <table class="employee-table" id="employeeTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)" class="sortable-column">ID <span class="sort-indicator">&darr;</span></th>
+                <th onclick="sortTable(1)" class="sortable-column">First Name <span class="sort-indicator">&darr;</span></th>
+                <th onclick="sortTable(2)" class="sortable-column">Last Name <span class="sort-indicator">&darr;</span></th>
+                <th>Date of Birth</th>
+                <th onclick="sortTable(4)" class="sortable-column">Remaining Days Off <span class="sort-indicator">&darr;</span></th>
+                <th onclick="sortTable(5)" class="sortable-column">Sick Leave Days Used <span class="sort-indicator">&darr;</span></th>
+                <th>Equipment</th>
+                <th onclick="sortTable(7)" class="sortable-column">Team <span class="sort-indicator">&darr;</span></th>
+                <th>User ID</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var employee in Model.Employees)
+            {
+                <tr>
+                    <td>@employee.Id</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.DateOfBirth.ToShortDateString()</td>
+                    <td>@employee.RemainingDaysOff</td>
+                    <td>@employee.SickLeaveDaysUsed</td>
+                    <td>
+                        @if (Model.EquipmentNamesDictionary.ContainsKey(employee.Id))
+                        {
+                            var equipmentNames = string.Join(", ", Model.EquipmentNamesDictionary[employee.Id]);
+                            <div>@equipmentNames</div>
+                        }
+                    </td>
+                    <td>@(employee.Team != null ? employee.Team.Name : "N/A")</td>
+                    <td>@(employee.UserId != null ? employee.UserId : "N/A")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
