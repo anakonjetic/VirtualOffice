@@ -24,18 +24,38 @@ namespace VirtualOffice.Controllers
         public IActionResult LoadPartialView(string target)
         {
 
-            //dohvaćanje podataka za model poslan u partial view --start
+            string loggedInUserId = User.Identity.Name;
 
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            if (loggedInEmployee == null)
+            {
+                return NotFound();
+            }
+
+            var employeeClockIns = GetClockInsByLoggedInEmployee(loggedInEmployee);
+
+
+            Console.WriteLine("Logged-in Employee:");
+            Console.WriteLine($"Id: {loggedInEmployee.Id}");
+            Console.WriteLine($"Name: {loggedInEmployee.FirstName} {loggedInEmployee.LastName}");
+
+            var clockIn1 = new EmployeeClockInViewModel
+            {
+                Employee = loggedInEmployee,
+                ClockIns = employeeClockIns
+
+            };
+            
             var requestModel = setRequestTableModel();
 
             //dohvaćanje podataka za model poslan u partial view --end
-
             switch (target)
             {
                 case "home":
                     return PartialView("_EmployeeHome");
                 case "clockIn":
-                    return PartialView("_EmployeeClockIn"); 
+                    return PartialView("_EmployeeClockIn", clockIn1); 
                 case "evaluation":
                     return PartialView("_EmployeeEvaluation");
                 case "equipment":
@@ -259,7 +279,21 @@ namespace VirtualOffice.Controllers
             public int Quantity { get; set; }
         }
 
+
+        private List<ClockIn> GetClockInsByLoggedInEmployee(Employee loggedInEmployee)
+        {
+            return _dbContext.ClockIns
+                .Where(c => c.EmployeeId == loggedInEmployee.Id)
+                .ToList();
+        }
+
     }
 
+    public class EmployeeClockInViewModel
+    {
+        public Employee? Employee { get; set; }
+        public List<ClockIn> ClockIns { get; set; }
+
+    }
 
 }
