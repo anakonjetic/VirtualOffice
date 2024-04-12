@@ -296,4 +296,24 @@ namespace VirtualOffice.Controllers
 
     }
 
+    public class EquipmentWrapperModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string CategoryName { get; set; }
+
+        public List<EquipmentRequestModel> EquipmentRequests { get; set; }
+
+    }
+
+    public class EquipmentRequestModel
+    {
+        public string Id { get; set; }
+        public string Summary { get; set; }
+        public string Type { get; set; }
+        public string Status { get; set; }
+
+        public bool SendToApproval { get; set; }
+
+    }
 }
