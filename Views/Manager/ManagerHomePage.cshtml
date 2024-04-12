@@ -366,10 +366,10 @@
     function declineRequest() {
         document.getElementById('IsApproved').value = false;
         document.getElementById('IsRejected').value = true;
-        document.getElementById('oooRequest').submit(); 
     }
 
     function showCommentSection() {
+        declineRequest();
         document.getElementById('commentSection').style.display = 'block';
         document.getElementById('approvalButtons').style.display = 'none';
     }

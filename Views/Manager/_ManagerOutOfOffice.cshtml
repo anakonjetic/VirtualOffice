@@ -1,15 +1,11 @@
-﻿
-
-<div class="col" style="margin-bottom:20px;">
-			<button type="button" onclick="createRequest()" class="btn btn-success">NEW REQUEST</button>
-</div>
-<table class="table" id="tableContainer">
+﻿<table class="table" id="tableContainer">
 	<thead>
 		<tr>
 			<th>ID</th>
 			<th>Summary</th>
 			<th>Type</th>
 			<th>Status</th>
+			<th>Employee</th>
 			<th>Date of Creation</th>
 		</tr>
 	</thead>
@@ -21,6 +17,7 @@
                 <td><p onclick="loadRequestOoOManagerDetailView(@request.Id)"  style="text-decoration:underline;">@request.Summary</p></td>
 				<td>@request.Type</td>
 				<td>@request.Status</td>
+				<td>@request.EmployeeFullName</td>
 				<td>@request.CreatedDate</td>
 			</tr>
 		}

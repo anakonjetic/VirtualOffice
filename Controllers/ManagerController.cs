@@ -518,6 +518,35 @@ namespace VirtualOffice.Controllers
             return PartialView("_ManagerTeamTable", teamManagementModel);
         }
 
+        public IActionResult RequestDecision(RequestOoOManagerViewModel model)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == model.RequestID).Include(r => r.Status).FirstOrDefault();
+            var employee = _dbContext.Employee.Where(e => e.Id == model.EmployeeID).FirstOrDefault();
+
+            if(request.RequestTypeID == 1)
+            {
+                if ((bool)model.IsApproved)
+                {
+                    request.StatusId = 3;
+                }
+                else
+                {
+                    request.StatusId = 4;
+                    request.Comment = model.Comment;
+                    employee.RemainingDaysOff = model.RemainingDays;
+                }
+            } else if (request.RequestTypeID == 2)
+            {
+                employee.SickLeaveDaysUsed += model.Quantity;
+                request.StatusId = 3;
+            }
+
+            _dbContext.SaveChanges();
+
+            return View("ManagerHomePage", "office");
+
+        }
+
         [HttpPost]
         public IActionResult Create(Employee model)
         {
@@ -855,6 +884,8 @@ namespace VirtualOffice.Controllers
 
             var approvable = remainingDaysAfterSubstraction >= 0;
 
+            var isRequestClosed = request.StatusId == 3 || request.StatusId == 4 ? true : false;
+
             var requestModel = new RequestOoOManagerViewModel
             {
                 RequestTypeID = request.RequestTypeID,
@@ -863,7 +894,11 @@ namespace VirtualOffice.Controllers
                 AdditionalInfo = request.AdditionalInfo,
                 Quantity = (int)request.Quantity,
                 RemainingDays = (int)remainingDaysAfterSubstraction,
-                IsRequestApprovable = approvable
+                IsRequestClosed = isRequestClosed,
+                IsRequestApprovable = approvable,
+                EmployeeFullName = employee.FullName,
+                EmployeeID = employee.Id,
+                RequestID = request.Id
             };
 
             return PartialView("_ManagerOoOSummary", requestModel);
@@ -887,6 +922,7 @@ namespace VirtualOffice.Controllers
 
             foreach (var request in requests)
             {
+                var requestEmployee = _dbContext.Employee.Where(e => e.Id == request.EmployeeId).FirstOrDefault();
                 var requestModel = new RequestManagementWrapperModel
                 {
                     Id = request.Id,
@@ -894,7 +930,8 @@ namespace VirtualOffice.Controllers
                     Type = _dbContext.RequestType.Where(t => t.Id == request.RequestTypeID).FirstOrDefault()?.Name,
                     Status = _dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Name,
                     StatusId = (int)(_dbContext.Status.Where(s => s.Id == request.StatusId).FirstOrDefault()?.Id),
-                    CreatedDate = request.CreatedDate
+                    CreatedDate = request.CreatedDate,
+                    EmployeeFullName = requestEmployee.FullName
                 };
 
                 wrapperModels.Add(requestModel);
@@ -950,6 +987,7 @@ namespace VirtualOffice.Controllers
         public string Type { get; set; }
         public string Status { get; set; }
         public int StatusId { get; set; }
+        public string EmployeeFullName { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
@@ -957,6 +995,7 @@ namespace VirtualOffice.Controllers
 
     public class RequestOoOManagerViewModel
     {
+        public string RequestID { get; set; }
         public int RequestTypeID { get; set; }
 
         public List<RequestType> RequestTypes { get; set; }
@@ -966,10 +1005,15 @@ namespace VirtualOffice.Controllers
         public string AdditionalInfo { get; set; }
         public int Quantity { get; set; }
         public int RemainingDays { get; set; }
+        
+        public bool IsRequestClosed { get; set; }
         public bool IsRequestApprovable { get; set; }
 
         public bool? IsApproved { get; set; }
         public bool? IsRejected { get; set; }
         public string? Comment { get; set; }
+
+        public string EmployeeFullName { get; set; }
+        public int EmployeeID { get; set; }
     }
 }
