@@ -340,8 +340,33 @@
 
     //loadanje request ooo summary --end
 
+    function updateRating2(value) {
+        document.getElementById("ratingValue").innerText = value;
+        document.getElementById("ratingInput").value = value;
+    }
+
+    function showEvaluationForm2(employeeId, employeeName, managerId, managerName) {
+        const formWrapper = document.getElementById('evaluation-form-wrapper');
+        const form = document.getElementById('evaluation-form');
+        const employeeNameElement = document.getElementById('employee-name');
+
+        // Set employee name in the form
+        employeeNameElement.innerText = managerName;
+
+        // Show form
+        formWrapper.style.display = 'block';
+
+        document.getElementById('employeeId').value = employeeId;
+        document.getElementById('managerId').value = managerId;
+
+        document.getElementById('evaluationType').addEventListener('change', function () {
+            var selectedValue = this.value;
+            document.getElementById('evaluationTypeId').value = selectedValue;
+        });
+    }
 
 
   </script>
+
 
 </body>
