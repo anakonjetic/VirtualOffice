@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @* @inject UserManager<IdentityUser> UserManager *@
 @{
     Layout = null; // Remove layout inheritance
@@ -158,7 +158,7 @@
     }@userId</div>
     <div class="dropdown" id="dropdown">
         <a href="#">Profile</a>
-        <a href="#">Settings</a>
+        <a href="#" data-target="settings" id="settings">Settings</a>
         <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
   </div>
@@ -192,6 +192,13 @@
       }
     }
     //dropdown za logout --end
+
+        document.getElementById("settings")
+            .addEventListener('click', event => {
+                event.preventDefault();
+                const target = event.target.dataset.target;
+                loadPartialViewEmployee(target);
+            });
 
     //trigger za navigaciju --start
     document.querySelectorAll('.vertical-nav a').forEach(item => {
@@ -375,6 +382,7 @@
 
     //loadanje request ooo summary --end
 
+
     //create request (equipment) logika --start
 
      function equipmentCreateRequest() {
@@ -390,7 +398,32 @@
     }
     //create request (equipment) logika --end
 
+    function updateRating2(value) {
+        document.getElementById("ratingValue").innerText = value;
+        document.getElementById("ratingInput").value = value;
+    }
+
+    function showEvaluationForm2(employeeId, employeeName, managerId, managerName) {
+        const formWrapper = document.getElementById('evaluation-form-wrapper');
+        const form = document.getElementById('evaluation-form');
+        const employeeNameElement = document.getElementById('employee-name');
+
+        // Set employee name in the form
+        employeeNameElement.innerText = managerName;
+
+        // Show form
+        formWrapper.style.display = 'block';
+
+        document.getElementById('employeeId').value = employeeId;
+        document.getElementById('managerId').value = managerId;
+
+        document.getElementById('evaluationType').addEventListener('change', function () {
+            var selectedValue = this.value;
+            document.getElementById('evaluationTypeId').value = selectedValue;
+        });
+    }
 
   </script>
+
 
 </body>

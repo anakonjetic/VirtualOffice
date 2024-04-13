@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using VirtualOffice.Data;
 using VirtualOffice.Models;
+using Microsoft.Extensions.Logging;
 
 namespace VirtualOffice.Controllers
 {
@@ -10,10 +11,12 @@ namespace VirtualOffice.Controllers
     {
 
         private ApplicationDbContext _dbContext;
+        private ILogger<ManagerController> _logger;
 
-        public EmployeeController(ApplicationDbContext dbContext)
+        public EmployeeController(ApplicationDbContext dbContext, ILogger<ManagerController> logger)
         {
             this._dbContext = dbContext;
+            _logger = logger;
         }
 
         public IActionResult EmployeeHomePage()
@@ -35,6 +38,10 @@ namespace VirtualOffice.Controllers
 
             var employeeClockIns = GetClockInsByLoggedInEmployee(loggedInEmployee);
 
+            var manager = GetManager(loggedInUserId);
+
+            var evaluationType = GetEvaluationType();
+
 
             Console.WriteLine("Logged-in Employee:");
             Console.WriteLine($"Id: {loggedInEmployee.Id}");
@@ -50,6 +57,14 @@ namespace VirtualOffice.Controllers
             var requestModel = setRequestTableModel();
             var equipmentModel = setEquipmentTabModel();
 
+            var evaluationModel2 = new ManagerEvaluationViewModel
+            {
+                Manager = manager,
+                LoggedInEmployee = loggedInEmployee,
+                EvaluationForm = new EvaluationForm(),
+                EvaluationType = evaluationType
+            };
+
             //dohvaćanje podataka za model poslan u partial view --end
             switch (target)
             {
@@ -58,11 +73,13 @@ namespace VirtualOffice.Controllers
                 case "clockIn":
                     return PartialView("_EmployeeClockIn", clockIn1); 
                 case "evaluation":
-                    return PartialView("_EmployeeEvaluation");
+                    return PartialView("_EmployeeEvaluation", evaluationModel2);
                 case "equipment":
                     return PartialView("_EmployeeEquipment", equipmentModel);
                 case "outOfOffice":
                     return PartialView("_EmployeeOutOfOffice", requestModel);
+                case "settings":
+                    return PartialView("_EmployeeEditAccount", loggedInEmployee);
 
                 default:
                     return NotFound();
@@ -334,6 +351,7 @@ namespace VirtualOffice.Controllers
             return wrapperModels;
         }
 
+
         public EquipmentWrapperModel setEquipmentTabModel()
         {
             string loggedInUserId = User.Identity.Name;
@@ -385,7 +403,95 @@ namespace VirtualOffice.Controllers
         }
                
 
-        public class RequestWrapperModel
+        [HttpPost]
+        public async Task<IActionResult> EditAccount(int id)
+        {
+            var model = this._dbContext.Employee.Single(d => d.Id == id);
+            var ok = await this.TryUpdateModelAsync(model);
+
+            if (ok && ModelState.IsValid)
+            {
+                this._dbContext.SaveChanges();
+                return View("EmployeeHomePage");
+            }
+
+            return View("EmployeeHomePage");
+        }
+
+        private Employee GetManager(string loggedInUserId)
+        {
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            if (loggedInEmployee == null)
+            {
+                return null;
+            }
+
+            var managerQuery = this._dbContext.EmployeeManager
+                .Where(em => em.EmployeeId == loggedInEmployee.Id)
+                .Select(em => em.Manager);
+
+            return managerQuery.FirstOrDefault();
+        }
+
+        private List<EvaluationType> GetEvaluationType()
+        {
+            return _dbContext.EvaluationType.ToList();
+        }
+
+        // GET: ManagerController/SubmitEvaluation
+        [HttpPost]
+        public IActionResult SubmitEvaluation2(ManagerEvaluationViewModel model)
+        {
+
+            ModelState.Clear();
+            var evaluationForm = new EvaluationForm
+            {
+                EmployeeId = model.EmployeeId,
+                ManagerId = model.ManagerId,
+                FormTitle = model.EvaluationForm.FormTitle,
+                FormDescription = model.EvaluationForm.FormDescription,
+                Rating = model.EvaluationForm.Rating,
+                Date = model.EvaluationForm.Date,
+                EvaluationTypeId = model.EvaluationTypeId // Assuming EvaluationTypeId is the correct property name
+            };
+
+            // Check if the model state is valid
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation("TEST");
+
+                try
+                {
+                    _dbContext.EvaluationForm.Add(evaluationForm);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index", "Home");
+
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
+                    return RedirectToAction("Index", "Home");
+
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+     
+
+        private List<ClockIn> GetClockInsByLoggedInEmployee(Employee loggedInEmployee)
+        {
+            return _dbContext.ClockIns
+                .Where(c => c.EmployeeId == loggedInEmployee.Id)
+                .ToList();
+        }
+
+    }
+    
+   public class RequestWrapperModel
         {
             public string Id { get; set; }
             public string Summary { get; set; }
@@ -409,21 +515,13 @@ namespace VirtualOffice.Controllers
         }
 
 
-        private List<ClockIn> GetClockInsByLoggedInEmployee(Employee loggedInEmployee)
-        {
-            return _dbContext.ClockIns
-                .Where(c => c.EmployeeId == loggedInEmployee.Id)
-                .ToList();
-        }
-
-    }
-
     public class EmployeeClockInViewModel
     {
         public Employee? Employee { get; set; }
         public List<ClockIn> ClockIns { get; set; }
 
     }
+
 
     public class EquipmentWrapperModel
     {
@@ -455,4 +553,22 @@ namespace VirtualOffice.Controllers
         public string AdditionalInfo { get; set; }
         public int Quantity { get; set; }
     }
+
+    public class ManagerEvaluationViewModel
+    {
+        public Employee Manager { get; set; }
+        public Employee LoggedInEmployee { get; set; }
+
+        public EvaluationForm EvaluationForm { get; set; }
+
+        public List<EvaluationType> EvaluationType { get; set; }
+
+        public int EvaluationTypeId { get; set; }
+        public int EmployeeId { get; set; }
+
+        public int ManagerId { get; set; }
+
+    }
+
+
 }

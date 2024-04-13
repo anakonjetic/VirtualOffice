@@ -165,8 +165,8 @@
     }@userId</div>
     <div class="dropdown" id="dropdown">
       <a href="#">Profile</a>
-      <a href="#">Settings</a>
-      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
+      <a href="#" data-target="settings" id="settings">Settings</a>
+      <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })">Logout</a>
     </div>
   </div>
 
@@ -227,6 +227,13 @@
       }
     }
     //dropdown za logout --end
+
+    document.getElementById("settings")
+    .addEventListener('click', event => {
+                event.preventDefault();
+                const target = event.target.dataset.target;
+                loadPartialView(target);
+    });
 
     //listener za navigaciju --start
       document.querySelectorAll('.vertical-nav a').forEach(item => {
@@ -631,7 +638,31 @@
         }
     }
 
+    function updateRating(value) {
+        document.getElementById("ratingValue").innerText = value;
+        document.getElementById("ratingInput").value = value;
+    }
 
+    function showEvaluationForm(employeeId, employeeName, managerId) {
+        const formWrapper = document.getElementById('evaluation-form-wrapper');
+        const form = document.getElementById('evaluation-form');
+        const employeeNameElement = document.getElementById('employee-name');
+
+        // Set employee name in the form
+        employeeNameElement.innerText = employeeName;
+
+        // Show form
+        formWrapper.style.display = 'block';
+
+        document.getElementById('employeeId').value = employeeId;
+        document.getElementById('managerId').value = managerId;
+
+        document.getElementById('evaluationType').addEventListener('change', function () {
+            var selectedValue = this.value;
+            document.getElementById('evaluationTypeId').value = selectedValue;
+        });
+
+    }
 
 
   </script>
