@@ -463,19 +463,19 @@ namespace VirtualOffice.Controllers
                 {
                     _dbContext.EvaluationForm.Add(evaluationForm);
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Index", "Home");
+                    return View("EmployeeHomePage", "evaluation");
 
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
-                    return RedirectToAction("Index", "Home");
+                    return View("EmployeeHomePage", "evaluation");
 
                 }
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return View("EmployeeHomePage", "evaluation");
             }
         }
      

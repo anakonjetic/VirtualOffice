@@ -131,7 +131,6 @@
       <li><a href="#" data-target="employee">Employee Management</a></li>
       <li><a href="#" data-target="team">Team Management</a></li>
       <li><a href="#" data-target="export">Data Export</a></li>
-      <li><a href="#" data-target="create">Create employee</a></li>
     </ul>
   </nav>
   <div class="top-card">
@@ -314,10 +313,11 @@
     }
     //loadanje filter team partiala u content div i logika triggeranja filter funkc --end
 
-    //loadanje create team partiala u content div--start
+
+    //loadanje create employee partiala u content div--start
 
     function createTeam() {
-      const url = '@Url.Action("TeamCreate", "Manager")?teamId=' + null;
+      const url = '@Url.Action("Create", "Manager")?teamId=' + null;
       fetch(url)
         .then(response => response.text())
         .then(data => {
@@ -327,7 +327,7 @@
           console.error('Error:', error);
         });
     }
-    //loadanje create team partiala u content div--end
+    //loadanje create employee partiala u content div--end
 
     //brisanje tima --start
     function deleteTeam(teamId) {

@@ -122,13 +122,13 @@ namespace VirtualOffice.Controllers
                     return PartialView("_ManagerTeamTable", teamManagementModel);
                 case "export":
                     return PartialView("_EmployeeList", dataExport);
-                case "create":
-                    return PartialView("_CreateEmployee");
                 case "settings":
                     return PartialView("_ManagerEditAccount", loggedInEmployee);
+                case "create":
+                    return PartialView("_CreateEmployee");
 
                 default:
-                    return PartialView("_ManagerHome");
+                    return PartialView("_ManagerClockIn");
             }
         }
 
@@ -1144,19 +1144,19 @@ namespace VirtualOffice.Controllers
                 {
                     _dbContext.EvaluationForm.Add(evaluationForm);
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Index", "Home");
+                    return View("ManagerHomePage", "evaluation");
 
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
-                    return RedirectToAction("Index", "Home");
+                    return View("ManagerHomePage", "evaluation");
 
                 }
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return View("ManagerHomePage", "evaluation");
             }
         }
 
