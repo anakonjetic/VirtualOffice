@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Text;
 using VirtualOffice.Data;
 using VirtualOffice.Models;
+using Microsoft.Extensions.Logging;
 
 namespace VirtualOffice.Controllers
 {
@@ -15,11 +16,13 @@ namespace VirtualOffice.Controllers
         private ApplicationDbContext _dbContext;
         private UserManager<IdentityUser> _userManager;
         private DateTime? clockInTime; // Variable to store clock in time
+        private ILogger<ManagerController> _logger;
 
-        public ManagerController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
+        public ManagerController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, ILogger<ManagerController> logger)
         {
             this._dbContext = dbContext;
             this._userManager = userManager;
+            this._logger = logger;
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Or LicenseContext.Commercial for commercial use
 
         }
@@ -56,6 +59,11 @@ namespace VirtualOffice.Controllers
 
             var teamManagers = GetManagersByTeam(null);
 
+            var evaluationForm = CreateEvaluationForm();
+
+            var evaluationType = GetEvaluationType();
+
+            var evaluationFormList = GetEvaluationForms();
 
             var teamManagementModel = new TeamManagementWrapperModel
             {
@@ -77,7 +85,18 @@ namespace VirtualOffice.Controllers
 
             };
 
+
             var requestModel = setRequestTableModel();
+
+            var evaluationModel = new EmployeeEvaluationViewModel
+            {
+                Employees = employeeModel,
+                LoggedInEmployee = loggedInEmployee,
+                EvaluationForm = new EvaluationForm(),
+                EvaluationType = evaluationType,
+                EvaluationFormList = evaluationFormList
+            };
+
 
             //dohvaćanje podataka za model poslan u partial view --end
 
@@ -89,7 +108,7 @@ namespace VirtualOffice.Controllers
                 case "employee":
                     return PartialView("_ManagerEmployeeTable", employeeModel); //napravljen samo popis zaposlenika iz timova koji su predvođeni logged in userom
                 case "evaluation":
-                    return PartialView("_ManagerEvaluation");
+                    return PartialView("_ManagerEvaluation", evaluationModel);
                 case "office":
                     return PartialView("_ManagerOutOfOffice", requestModel);
                 case "equipment":
@@ -874,6 +893,7 @@ namespace VirtualOffice.Controllers
             return PartialView("_ManagerTeamTable", teamManagementModel);
         }
 
+
         public IActionResult RequestOoOManagerDetails(int requestId)
         {
             var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
@@ -938,6 +958,67 @@ namespace VirtualOffice.Controllers
             }
 
            return wrapperModels = wrapperModels.OrderBy(w => w.StatusId).ThenBy(w => requests.First(r => r.Id == w.Id).CreatedDate).ToList();
+
+        // Method to create and initialize EvaluationForm
+        private EvaluationForm CreateEvaluationForm()
+        {
+            // Initialize and return a new instance of EvaluationForm
+            return new EvaluationForm();
+        }
+
+        private List<EvaluationType> GetEvaluationType()
+        {
+            return _dbContext.EvaluationType.ToList();
+        }
+
+        
+
+        // GET: ManagerController/SubmitEvaluation
+        [HttpPost]
+        public IActionResult SubmitEvaluation1(EmployeeEvaluationViewModel model)
+        {
+
+            ModelState.Clear();
+            var evaluationForm = new EvaluationForm
+            {
+                EmployeeId = model.EmployeeId,
+                ManagerId = model.ManagerId,
+                FormTitle = model.EvaluationForm.FormTitle,
+                FormDescription = model.EvaluationForm.FormDescription,
+                Rating = model.EvaluationForm.Rating,
+                Date = model.EvaluationForm.Date,
+                EvaluationTypeId = model.EvaluationTypeId // Assuming EvaluationTypeId is the correct property name
+            };
+            
+            // Check if the model state is valid
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation("TEST");
+
+                try
+                {
+                    _dbContext.EvaluationForm.Add(evaluationForm);
+                    _dbContext.SaveChanges();
+                    return RedirectToAction("Index", "Home");
+
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
+                    return RedirectToAction("Index", "Home");
+
+                }
+            }
+            else
+            { 
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        private List<EvaluationForm> GetEvaluationForms()
+        {
+            return _dbContext.EvaluationForm.ToList();
+
         }
     }
 
@@ -980,6 +1061,7 @@ namespace VirtualOffice.Controllers
         public List<Employee> AvailableEmployees { get; set; }
     }
 
+
     public class RequestManagementWrapperModel
     {
         public string Id { get; set; }
@@ -1015,5 +1097,26 @@ namespace VirtualOffice.Controllers
 
         public string EmployeeFullName { get; set; }
         public int EmployeeID { get; set; }
+
+    public class EmployeeEvaluationViewModel
+    {
+        public List<Employee> Employees { get; set; }
+
+        public Employee LoggedInEmployee { get; set; }
+
+        public EvaluationForm EvaluationForm { get; set; }
+
+        public List<EvaluationType> EvaluationType { get; set; }
+
+        public int EvaluationTypeId { get; set; }
+        public int EmployeeId { get; set; }
+
+        public int ManagerId { get; set; }
+
+        public bool IsSubmissionSuccessful { get; set; }
+
+        public List<EvaluationForm> EvaluationFormList { get; set; }
+
+
     }
 }
