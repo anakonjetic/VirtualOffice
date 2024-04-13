@@ -68,8 +68,6 @@ namespace VirtualOffice.Controllers
             //dohvaćanje podataka za model poslan u partial view --end
             switch (target)
             {
-                case "home":
-                    return PartialView("_EmployeeHome");
                 case "clockIn":
                     return PartialView("_EmployeeClockIn", clockIn1); 
                 case "evaluation":

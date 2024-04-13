@@ -122,7 +122,6 @@
 <body>
     <nav class="vertical-nav">
         <ul>
-            <li><a href="#" data-target="home">Home</a></li>
             <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
             <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
             <li><a href="#" data-target="equipment">Equipment Management</a></li>
@@ -157,7 +156,6 @@
         }
     }@userId</div>
     <div class="dropdown" id="dropdown">
-        <a href="#">Profile</a>
         <a href="#" data-target="settings" id="settings">Settings</a>
         <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
@@ -177,7 +175,7 @@
         if (modelString.trim() !== '') {
             loadPartialViewEmployee(modelString);
         }else{
-            loadPartialViewEmployee('home')
+            loadPartialViewEmployee('clockIn')
         }       
         });
         //loadanje partiala po loadanju stranice --end

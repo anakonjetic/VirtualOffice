@@ -70,9 +70,24 @@
     textarea {
         resize: none;
     }
+
+    h3 {
+    font-size: 1.5rem; 
+    font-weight: bold;
+    color: #333; 
+    text-align: center; 
+    padding: 10px; 
+    background-color: #f5f5f5; 
+    border-radius: 5px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    margin: 10px; 
+}
 </style>
 
-<h3>Click on a card to evaluate your manager:</h3>
+<h3>Evaluation Form</h3>
+<br/>
+
+<h4>Click on a card to evaluate your manager:</h4>
 @if (Model.Manager != null)
 {
     <div class="employee-card" style="margin-bottom: 10px;" onclick="showEvaluationForm2('@Model.LoggedInEmployee.Id', '@Model.LoggedInEmployee.FirstName @Model.LoggedInEmployee.FirstName', '@Model.Manager.Id', '@Model.Manager.FirstName @Model.Manager.LastName')">

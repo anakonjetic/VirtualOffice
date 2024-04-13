@@ -15,7 +15,7 @@
         .search-container {
             position: relative;
             display: flex;
-            justify-content: center;
+            justify-content: left;
             margin-bottom: 20px;
         }
 
@@ -75,12 +75,46 @@
         .sort-desc .sort-indicator {
             opacity: 1;
         }
+
+        h3 {
+            font-size: 1.5rem; 
+            font-weight: bold;
+            color: #333; 
+            text-align: center; 
+            padding: 10px; 
+            background-color: #f5f5f5; 
+            border-radius: 5px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+            margin: 10px; 
+        }
+
+        .export-button {
+            background-color: #4CAF50; /* Green background */
+            border: none; /* Remove border */
+            color: white; /* White text */
+            padding: 10px 20px; /* Padding */
+            text-align: center; /* Center text */
+            text-decoration: none; /* Remove underline */
+            display: inline-block; /* Make it a block element */
+            font-size: 16px; /* Font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Add cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition for background color */
+            margin-left: 10px;
+        }
+
+            .export-button:hover {
+                background-color: #45a049; /* Darker green on hover */
+                color: white; /* White text on hover */
+                text-decoration: none; /* Remove underline on hover */
+            }
     </style>
 </head>
 <body>
-    <h1>Employee List</h1>
+    <h3>Data Export</h3>
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="&#128269; Search for employees" oninput="searchEmployees()">
+        <button id="exportButton" class="export-button" onclick="exportToExcel()">Export to Excel</button>
     </div>
 
     <table class="employee-table" id="employeeTable">
@@ -94,7 +128,6 @@
                 <th onclick="sortTable(5)" class="sortable-column">Sick Leave Days Used <span class="sort-indicator">&darr;</span></th>
                 <th>Equipment</th>
                 <th onclick="sortTable(7)" class="sortable-column">Team <span class="sort-indicator">&darr;</span></th>
-                <th>User ID</th>
             </tr>
         </thead>
 
@@ -116,7 +149,6 @@
                         }
                     </td>
                     <td>@(employee.Team != null ? employee.Team.Name : "N/A")</td>
-                    <td>@(employee.UserId != null ? employee.UserId : "N/A")</td>
                 </tr>
             }
         </tbody>

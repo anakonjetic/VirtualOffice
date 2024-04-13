@@ -106,8 +106,6 @@ namespace VirtualOffice.Controllers
             //dohvaćanje Partial View objekata ovisno o odabranom Nav Itemu
             switch (target)
             {
-                case "home":
-                    return PartialView("_ManagerHome");
                 case "employee":
                     return PartialView("_ManagerEmployeeTable", employeeModel); //napravljen samo popis zaposlenika iz timova koji su predvođeni logged in userom
                 case "evaluation":
@@ -123,8 +121,6 @@ namespace VirtualOffice.Controllers
                 case "team":
                     return PartialView("_ManagerTeamTable", teamManagementModel);
                 case "export":
-                    return PartialView("_ManagerDataExport", dataExport);
-                case "list":
                     return PartialView("_EmployeeList", dataExport);
                 case "create":
                     return PartialView("_CreateEmployee");
