@@ -80,7 +80,7 @@ namespace VirtualOffice.Controllers
                     return PartialView("_EmployeeEditAccount", loggedInEmployee);
 
                 default:
-                    return NotFound();
+                    return PartialView("_EmployeeClockIn", clockIn1);
             }
         }
 
