@@ -1,0 +1,46 @@
+﻿@using static VirtualOffice.Controllers.EmployeeController
+@model RequestOoOViewModel
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialViewEmployee('outOfOffice')">Out of Office Table</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+           <p>Request Details</p>
+        </li>
+    </ol>
+</nav>
+
+    <p class="input-group-prepend input-group-text" style="margin-bottom:20px;">OUT OF OFFICE REQUEST DETAILS</p>
+
+
+<form asp-action="SaveOoORequest" method="post">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputSummary">Summary</label>
+        </div>
+        <input type="text" asp-for="Summary" class="form-control custom-text-input" id="inputSummary" readonly/>
+    </div>
+     <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputAdditionalInfo">Additional Info</label>
+        </div>
+        <input type="text" asp-for="AdditionalInfo" class="form-control custom-text-input" id="inputAdditionalInfo" readonly/>
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputManager">Additional Info</label>
+        </div>
+        <select asp-for="RequestTypeID" class="custom-select" id="inputRequestType" disabled>
+            @foreach (var type in @Model.RequestTypes)
+            {
+                <option value="@type.Id">@type.Name</option>
+            }
+        </select>
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputQuantity">OoO Work Days</label>
+        </div>
+        <input type="text" asp-for="Quantity" class="form-control custom-text-input" id="inputQuantity" readonly/>
+    </div>
+
+</form>

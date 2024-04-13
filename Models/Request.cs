@@ -26,6 +26,14 @@ namespace VirtualOffice.Models
 
         public virtual RequestType? RequestType { get; set; }
 
+        public string? Summary { get; set; }
+
+        public string? AdditionalInfo { get; set; }
+
+        public string? Comment { get; set; }
+
+        public int? Quantity { get; set; }
+
     }
 
     public class Status
@@ -43,5 +51,6 @@ namespace VirtualOffice.Models
         public string Name { get; set; }
         public virtual ICollection<Request>? Request { get; set; }
     }
+
 
  }

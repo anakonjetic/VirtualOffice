@@ -1,36 +1,95 @@
-﻿<!DOCTYPE html>
+﻿@using System.Linq
+<!DOCTYPE html>
 <html>
 <head>
     <title>Clock In Clock Out</title>
     <style>
+        body {
+            position: relative;
+            height: 100vh; /* Set height of body to full viewport height */
+            margin: 0; /* Remove default margin */
+        }
+
         .clock-container {
+            position: absolute;
+            top: 50px; /* Adjust top position as needed */
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
-            margin-top: 50px;
+            width: 300px; /* Adjust width if necessary */
+        }
+
+        .clock-buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-left: 10px;
         }
 
         .clock-in, .clock-out {
             background-color: green;
             color: white;
-            padding: 10px 20px;
-            border: none;
+            padding: 20px; /* Increased padding to make buttons bigger */
+            border: 2px solid transparent; /* Add transparent border */
             cursor: pointer;
             font-size: 16px;
-            margin-right: 10px; /* Add margin to separate the buttons */
+            border-radius: 50%; /* Make buttons circular */
+            width: 100px; /* Set width and height to ensure circular shape */
+            height: 100px;
+            margin-bottom: 20px; /* Add margin below buttons */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add box shadow */
+            transition: all 0.3s ease; /* Add transition for smooth effect */
         }
 
         .clock-out {
             background-color: red; /* Set Clock Out button color to red */
+            margin-left: 80px; /* Add more space between Clock In and Clock Out */
         }
 
+            .clock-in:hover, .clock-out:hover {
+                transform: translateY(-3px); /* Move button up slightly on hover */
+                box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Increase box shadow on hover */
+            }
+
         .clock-display {
-            margin-top: 20px;
-            margin-bottom: 20px;
             font-size: 24px;
+            margin-top: 20px; /* Add margin at the top */
+            background-color: #f2f2f2; /* Rectangle background color */
+            padding: 80px; /* Add padding */
+            border: 2px solid #ddd; /* Add border */
+            border-radius: 10px; /* Add border radius */
+        }
+
+        .table-container {
+            position: relative; /* Add relative positioning */
+            margin-top: 400px; /* Adjust margin top to create space between clock container and table */
+            width: 100%; /* Set the width to full */
+            text-align: center; /* Center-align the content */
+        }
+
+        .name-labels {
+            text-align: left; /* Align name labels to the left */
+            margin-bottom: 10px; /* Add space below the name labels */
+        }
+
+        .name-pair {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+
+            .name-pair label {
+                font-weight: bold;
+                margin-right: 10px;
+            }
+
+        .first-name {
+            margin-bottom: 10px;
         }
 
         table {
             border-collapse: collapse;
-            width: 100%;
+            width: 100%; /* Set the table width to full */
         }
 
         th, td {
@@ -46,9 +105,51 @@
 </head>
 <body>
     <div class="clock-container">
-        <button id="clockInButton" onclick="clockIn()" class="clock-in">Clock In</button>
-        <button id="clockOutButton" onclick="clockOut()" class="clock-out">Clock Out</button>
+        <div class="clock-buttons">
+            <button id="clockInButton" onclick="clockIn()" class="clock-in">Clock In</button>
+            <button id="clockOutButton" onclick="clockOut()" class="clock-out">Clock Out</button>
+        </div>
         <div id="clockDisplay" class="clock-display"></div>
+    </div>
+
+    <div class="table-container">
+        <div class="name-labels">
+            @foreach (var clockIn in Model.ClockIns)
+            {
+                if (Model.ClockIns != null)
+                {
+                    <div class="name-pair">
+                        <label class ="first-name">First Name: @clockIn.Employee.FirstName</label>
+                        <label class="last-name">Last Name: @clockIn.Employee.LastName</label>
+                    </div>
+                    break;
+                }
+            }
+        </div>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Clock In Time</th>
+                    <th>Clock Out Time</th>
+                    <th>Time Working</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var clockIn in Model.ClockIns)
+                {
+                    <tr>
+                        <td>@clockIn.ClockInTime</td>
+                        <td>@clockIn.ClockOutTime</td>
+                        @{
+                            TimeSpan timeWorked = clockIn.ClockOutTime - clockIn.ClockInTime;
+                            string formattedTimeWorked = timeWorked.ToString(@"hh\:mm\:ss");
+                        }
+                        <td>@formattedTimeWorked</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
