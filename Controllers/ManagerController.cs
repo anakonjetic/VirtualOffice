@@ -1041,7 +1041,7 @@ namespace VirtualOffice.Controllers
             return _dbContext.EvaluationForm.ToList();
 
         }
-
+    }
         //u partial view se može slati jedan item, pa je više podataka wrappano
         public class TeamManagementWrapperModel
         {
@@ -1139,5 +1139,4 @@ namespace VirtualOffice.Controllers
 
             public List<EvaluationForm> EvaluationFormList { get; set; }
         }
-    }
 }
