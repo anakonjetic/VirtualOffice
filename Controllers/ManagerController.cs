@@ -957,8 +957,9 @@ namespace VirtualOffice.Controllers
                 wrapperModels.Add(requestModel);
             }
 
-           return wrapperModels = wrapperModels.OrderBy(w => w.StatusId).ThenBy(w => requests.First(r => r.Id == w.Id).CreatedDate).ToList();
+            return wrapperModels = wrapperModels.OrderBy(w => w.StatusId).ThenBy(w => requests.First(r => r.Id == w.Id).CreatedDate).ToList();
 
+        }
         // Method to create and initialize EvaluationForm
         private EvaluationForm CreateEvaluationForm()
         {
@@ -1087,7 +1088,7 @@ namespace VirtualOffice.Controllers
         public string AdditionalInfo { get; set; }
         public int Quantity { get; set; }
         public int RemainingDays { get; set; }
-        
+
         public bool IsRequestClosed { get; set; }
         public bool IsRequestApprovable { get; set; }
 
@@ -1097,7 +1098,7 @@ namespace VirtualOffice.Controllers
 
         public string EmployeeFullName { get; set; }
         public int EmployeeID { get; set; }
-
+    }
     public class EmployeeEvaluationViewModel
     {
         public List<Employee> Employees { get; set; }
