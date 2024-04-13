@@ -1,8 +1,51 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using VirtualOffice.Data
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject ApplicationDbContext DbContext
+
+@{
+    var isAuthenticated = User.Identity.IsAuthenticated.ToString().ToLower();
+    var loggedInUserId = User.Identity.Name;
+    var employee = DbContext.Employee.SingleOrDefault(e => e.UserId == loggedInUserId);
+    var isManager = employee?.Id != null && DbContext.EmployeeManager.Any(em => em.ManagerId == employee.Id);
+}
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row align-items-center justify-content-center">
+    <h1 class="display-4 col-8">Welcome to your Virtual Office</h1>
+    <br /><br /><br /><br /><br /><br /><br />
+    <div class="col-5">
+        <h2>Team management made easy</h2>
+        <p>Virtual Office offers easy and extensive management of Teams and their members</p>
+    </div>
+    <div class="col-5">
+        <h2>Add new Employees</h2>
+        <p>Virtual Office allows managers to add and create new employees with minimal difficulty</p>
+    </div>
+    <br /><br /><br /><br /><br /><br /><br />
+    <div class="col-5">
+        <h2>Evaluation forms</h2>
+        <p>Virtual Office allows users to evaluate their colleagues workplace performance and give feedback</p>
+    </div>
+    <div class="col-5">
+        <h2>Request forms</h2>
+        <p>Virtual Office allows users to easily submit requests for new equipment and time off/sick leave</p>
+    </div>
+    <br /><br /><br /><br /><br /><br /><br />
+    <div class="col-5">
+        <h2>Clock in/Clock out</h2>
+        <p>Virtual Office makes it easy for teams to track hours, manage attendance</p>
+    </div>
+    <div class="col-5">
+        <h2>Data export</h2>
+        <p>Virtual Office allowes managers to export employee data into one excel sheet</p>
+    </div>
+    <br /><br /><br /><br /><br /><br /><br />
+    @if(!SignInManager.IsSignedIn(User))
+    {
+        <button type="button" class="btn btn-primary col-3"><a class="btn-primary text-white" asp-area="Identity" asp-page="/Account/Login">Login</a></button>
+    }
 </div>
