@@ -338,6 +338,47 @@
         });
     }
     //brisanje tima --end
+
+    //loadanje request ooo summary --start
+
+     function loadRequestOoOManagerDetailView(requestId) {
+      const url = '@Url.Action("RequestOoOManagerDetails", "Manager")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //loadanje request ooo summary --end
+
+    //approvanje i declineanje requesta --start
+
+    function approveRequest() {
+        document.getElementById('IsApproved').value = true;
+        document.getElementById('IsRejected').value = false;
+        document.getElementById('oooRequest').submit(); 
+    }
+
+    function declineRequest() {
+        document.getElementById('IsApproved').value = false;
+        document.getElementById('IsRejected').value = true;
+    }
+
+    function showCommentSection() {
+        declineRequest();
+        document.getElementById('commentSection').style.display = 'block';
+        document.getElementById('approvalButtons').style.display = 'none';
+    }
+
+    function submitComment() {
+        document.getElementById('oooRequest').submit();
+    }
+
+    //approvanje i declineanje requesta --end
    
     function exportToExcel() {
         console.log('Exporting to Excel...');
