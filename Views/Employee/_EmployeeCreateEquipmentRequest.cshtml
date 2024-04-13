@@ -1,18 +1,18 @@
-﻿@using static VirtualOffice.Controllers.EmployeeController
-@model RequestOoOViewModel
+﻿@using VirtualOffice.Controllers
+@model RequestEquipmentViewModel
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPartialView('team')">Equipment Table</a></li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialViewEmployee('equipment')">Equipment Table</a></li>
         <li class="breadcrumb-item active" aria-current="page">
            <p>New Request</p>
         </li>
     </ol>
 </nav>
 
-    <p class="input-group-prepend input-group-text" style="margin-bottom:20px;">CREATE NEW OUT OF OFFICE REQUEST</p>
+    <p class="input-group-prepend input-group-text" style="margin-bottom:20px;">CREATE EQUIPMENT REQUEST</p>
 
 
-<form asp-action="SaveOoORequest" method="post">
+<form asp-action="SaveEquipmentRequest" method="post">
     <div class="input-group mb-3">
         <div class="input-group-prepend">
             <label class="input-group-text" for="inputSummary">Summary</label>
@@ -27,7 +27,7 @@
     </div>
     <div class="input-group mb-3">
         <div class="input-group-prepend">
-            <label class="input-group-text" for="inputManager">Additional Info</label>
+            <label class="input-group-text" for="inputManager">Equipment Type</label>
         </div>
         <select asp-for="RequestTypeID" class="custom-select" id="inputRequestType">
             @foreach (var type in @Model.RequestTypes)
@@ -36,12 +36,9 @@
             }
         </select>
     </div>
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <label class="input-group-text" for="inputQuantity">OoO Work Days</label>
-        </div>
-        <input type="text" asp-for="Quantity" class="form-control custom-text-input" id="inputQuantity" />
-    </div>
+    
+        <input type="hidden" asp-for="Quantity" value=1 id="inputQuantity" />
+    
 
     <input type="submit" value="SAVE" class="btn btn-success" />
 </form>

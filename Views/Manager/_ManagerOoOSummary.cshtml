@@ -28,7 +28,7 @@
     </div>
     <div class="input-group mb-3">
         <div class="input-group-prepend">
-            <label class="input-group-text" for="inputManager">Additional Info</label>
+            <label class="input-group-text" for="inputManager">Request Type</label>
         </div>
         <select asp-for="RequestTypeID" class="custom-select" id="inputRequestType" disabled>
             @foreach (var type in @Model.RequestTypes)

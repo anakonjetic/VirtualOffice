@@ -13,5 +13,7 @@ namespace VirtualOffice.Models
         public int CategoryId { get; set; }
         public virtual EquipmentCategory? EquipmentCategory { get; set; }
 
+        
+
     }
 }
