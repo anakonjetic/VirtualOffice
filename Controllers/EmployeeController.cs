@@ -77,6 +77,8 @@ namespace VirtualOffice.Controllers
                     return PartialView("_EmployeeEquipment");
                 case "outOfOffice":
                     return PartialView("_EmployeeOutOfOffice", requestModel);
+                case "settings":
+                    return PartialView("_EmployeeEditAccount", loggedInEmployee);
 
                 default:
                     return NotFound();
@@ -267,6 +269,21 @@ namespace VirtualOffice.Controllers
             }
 
             return wrapperModels;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAccount(int id)
+        {
+            var model = this._dbContext.Employee.Single(d => d.Id == id);
+            var ok = await this.TryUpdateModelAsync(model);
+
+            if (ok && ModelState.IsValid)
+            {
+                this._dbContext.SaveChanges();
+                return View("EmployeeHomePage");
+            }
+
+            return View("EmployeeHomePage");
         }
 
         private Employee GetManager(string loggedInUserId)

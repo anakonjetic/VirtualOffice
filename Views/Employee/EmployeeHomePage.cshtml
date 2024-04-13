@@ -158,7 +158,7 @@
     }@userId</div>
     <div class="dropdown" id="dropdown">
         <a href="#">Profile</a>
-        <a href="#">Settings</a>
+        <a href="#" data-target="settings" id="settings">Settings</a>
         <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
   </div>
@@ -192,6 +192,13 @@
       }
     }
     //dropdown za logout --end
+
+        document.getElementById("settings")
+            .addEventListener('click', event => {
+                event.preventDefault();
+                const target = event.target.dataset.target;
+                loadPartialViewEmployee(target);
+            });
 
     //trigger za navigaciju --start
     document.querySelectorAll('.vertical-nav a').forEach(item => {
