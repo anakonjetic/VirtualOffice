@@ -128,7 +128,7 @@ namespace VirtualOffice.Controllers
                     return PartialView("_CreateEmployee");
 
                 default:
-                    return PartialView("_ManagerClockIn");
+                    return PartialView("_ManagerClockIn", clockIn);
             }
         }
 
