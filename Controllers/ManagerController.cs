@@ -106,8 +106,6 @@ namespace VirtualOffice.Controllers
             //dohvaćanje Partial View objekata ovisno o odabranom Nav Itemu
             switch (target)
             {
-                case "home":
-                    return PartialView("_ManagerHome");
                 case "employee":
                     return PartialView("_ManagerEmployeeTable", employeeModel); //napravljen samo popis zaposlenika iz timova koji su predvođeni logged in userom
                 case "evaluation":
@@ -123,16 +121,14 @@ namespace VirtualOffice.Controllers
                 case "team":
                     return PartialView("_ManagerTeamTable", teamManagementModel);
                 case "export":
-                    return PartialView("_ManagerDataExport", dataExport);
-                case "list":
                     return PartialView("_EmployeeList", dataExport);
-                case "create":
-                    return PartialView("_CreateEmployee");
                 case "settings":
                     return PartialView("_ManagerEditAccount", loggedInEmployee);
+                case "create":
+                    return PartialView("_CreateEmployee");
 
                 default:
-                    return PartialView("_ManagerHome");
+                    return PartialView("_ManagerClockIn");
             }
         }
 
@@ -1148,19 +1144,19 @@ namespace VirtualOffice.Controllers
                 {
                     _dbContext.EvaluationForm.Add(evaluationForm);
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Index", "Home");
+                    return View("ManagerHomePage", "evaluation");
 
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
-                    return RedirectToAction("Index", "Home");
+                    return View("ManagerHomePage", "evaluation");
 
                 }
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return View("ManagerHomePage", "evaluation");
             }
         }
 

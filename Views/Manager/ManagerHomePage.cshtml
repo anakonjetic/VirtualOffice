@@ -124,16 +124,13 @@
 <body>
   <nav class="vertical-nav">
     <ul>
-      <li><a href="#" data-target="home">Home</a></li>
       <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
       <li><a href="#" data-target="office">Out of Office Forms</a></li>
       <li><a href="#" data-target="equipment">Equipment Management</a></li>
       <li><a href="#" data-target="clock">Clock In - Clock Out</a></li>
       <li><a href="#" data-target="employee">Employee Management</a></li>
       <li><a href="#" data-target="team">Team Management</a></li>
-      <li><a href="#" data-target="list">List of Employees</a></li>
       <li><a href="#" data-target="export">Data Export</a></li>
-      <li><a href="#" data-target="create">Create employee</a></li>
     </ul>
   </nav>
   <div class="top-card">
@@ -164,7 +161,6 @@
         }
     }@userId</div>
     <div class="dropdown" id="dropdown">
-      <a href="#">Profile</a>
       <a href="#" data-target="settings" id="settings">Settings</a>
       <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })">Logout</a>
     </div>
@@ -185,7 +181,7 @@
         if (modelString.trim() !== '') {
             loadPartialView(modelString);
         }else{
-            loadPartialView('home')
+            loadPartialView('clock')
         }       
         });
         //loadanje partiala po loadanju stranice --end
@@ -317,10 +313,11 @@
     }
     //loadanje filter team partiala u content div i logika triggeranja filter funkc --end
 
-    //loadanje create team partiala u content div--start
+
+    //loadanje create employee partiala u content div--start
 
     function createTeam() {
-      const url = '@Url.Action("TeamCreate", "Manager")?teamId=' + null;
+      const url = '@Url.Action("Create", "Manager")?teamId=' + null;
       fetch(url)
         .then(response => response.text())
         .then(data => {
@@ -330,7 +327,7 @@
           console.error('Error:', error);
         });
     }
-    //loadanje create team partiala u content div--end
+    //loadanje create employee partiala u content div--end
 
     //brisanje tima --start
     function deleteTeam(teamId) {

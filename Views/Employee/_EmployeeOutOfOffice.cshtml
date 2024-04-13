@@ -11,7 +11,7 @@
 }</style>
 
 <h3>Out of Office Forms</h3>
-
+<br/>
 <div class="col" style="margin-bottom:20px;">
 			<button type="button" onclick="createRequest()" class="btn btn-success">NEW REQUEST</button>
 </div>
@@ -36,8 +36,8 @@
 				<td>
 					@if (@request.SendToApproval == true)
 					{
-					  <a href="#" onclick="sendOoOToApproval(@request.Id)">[send to approval]</a>
-					  <a href="#" onclick="deleteNewOoORequest(@request.Id)">[x]</a>
+					  <button type="button" class="btn btn-primary" onclick="sendOoOToApproval(@request.Id)">Send to Approval</button>
+					  <button type="button" class="btn btn-danger" onclick="deleteNewOoORequest(@request.Id)">Delete</button>
 					}					
 				</td>
 			</tr>

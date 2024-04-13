@@ -68,8 +68,6 @@ namespace VirtualOffice.Controllers
             //dohvaćanje podataka za model poslan u partial view --end
             switch (target)
             {
-                case "home":
-                    return PartialView("_EmployeeHome");
                 case "clockIn":
                     return PartialView("_EmployeeClockIn", clockIn1); 
                 case "evaluation":
@@ -313,13 +311,29 @@ namespace VirtualOffice.Controllers
             var requestModel = new RequestOoOViewModel
             {
                 RequestTypeID = request.RequestTypeID,
-                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id == 1 || rt.Id == 2 || rt.Id == 3 || rt.Id == 4).ToList(),
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id == 1 || rt.Id == 2).ToList(),
                 Summary = request.Summary,
                 AdditionalInfo = request.AdditionalInfo,
                 Quantity = (int)request.Quantity
             };
 
             return PartialView("_EmployeeOoOSummary", requestModel);
+        }
+
+        public IActionResult RequestEquipmentDetails(int requestId)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            var requestModel = new RequestOoOViewModel
+            {
+                RequestTypeID = request.RequestTypeID,
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id != 1 && rt.Id != 2).ToList(),
+                Summary = request.Summary,
+                AdditionalInfo = request.AdditionalInfo,
+                Quantity = (int)request.Quantity
+            };
+
+            return PartialView("_EmployeeEquipmentRequestSummary", requestModel);
         }
 
         public List<RequestWrapperModel> setRequestTableModel()
@@ -465,19 +479,19 @@ namespace VirtualOffice.Controllers
                 {
                     _dbContext.EvaluationForm.Add(evaluationForm);
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Index", "Home");
+                    return View("EmployeeHomePage", "evaluation");
 
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
-                    return RedirectToAction("Index", "Home");
+                    return View("EmployeeHomePage", "evaluation");
 
                 }
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return View("EmployeeHomePage", "evaluation");
             }
         }
      

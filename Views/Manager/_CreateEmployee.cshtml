@@ -1,5 +1,14 @@
 ﻿@model VirtualOffice.Models.Employee
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialView('employee')">Employee Management</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+           <p>Create New Employee</p>
+        </li>
+    </ol>
+</nav>
+
 <form asp-action="Create" asp-controller="Manager" method="post">
 	<div class="form-group">
 		<label class="control-label">First name</label>

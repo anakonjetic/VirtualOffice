@@ -118,10 +118,24 @@
     th {
         background-color: #f2f2f2;
     }
+
+    h3 {
+    font-size: 1.5rem; 
+    font-weight: bold;
+    color: #333; 
+    text-align: center; 
+    padding: 10px; 
+    background-color: #f5f5f5; 
+    border-radius: 5px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    margin: 10px; 
+}
 </style>
 
+<h3>Evaluation Forms</h3>
+<br/>
 <div>
-    <h3>Click on a card to evaluate employee:</h3>
+    <h4>Click on a card to evaluate employee:</h4>
     <!-- Updated HTML structure for employee labels -->
     <div class="employee-list">
         @foreach (var employee in Model.Employees)

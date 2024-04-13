@@ -16,7 +16,7 @@ h3 {
 </style>
 
 <h3>Assigned Equipment</h3>
-
+<br/>
 <table class="table" id="tableEquipmentContainer">
 	<thead>
 		<tr>
@@ -41,6 +41,7 @@ h3 {
 <br/>
 
 <h3>Equipment Requests</h3>
+<br/>
 <div class="col" style="margin-bottom:20px;">
 			<button type="button" onclick="equipmentCreateRequest()" class="btn btn-success">NEW REQUEST</button>
 </div>
@@ -65,8 +66,8 @@ h3 {
 				<td>
 					@if (@request.SendToApproval == true)
 					{
-					  <a href="#" onclick="sendEquipmentToApproval(@request.Id)">[send to approval]</a>
-					  <a href="#" onclick="deleteNewEquipmentRequest(@request.Id)">[x]</a>
+					  <button type="button" class="btn btn-primary" onclick="sendEquipmentToApproval(@request.Id)">Send to Approval</button>
+					  <button type="button" class="btn btn-danger" onclick="deleteNewEquipmentRequest(@request.Id)">Delete</button>
 					}					
 				</td>
 			</tr>
