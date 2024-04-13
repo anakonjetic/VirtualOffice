@@ -66,8 +66,8 @@ h3 {
 				<td>
 					@if (@request.SendToApproval == true)
 					{
-					  <a href="#" onclick="sendEquipmentToApproval(@request.Id)">[send to approval]</a>
-					  <a href="#" onclick="deleteNewEquipmentRequest(@request.Id)">[x]</a>
+					  <button type="button" class="btn btn-primary" onclick="sendEquipmentToApproval(@request.Id)">Send to Approval</button>
+					  <button type="button" class="btn btn-danger" onclick="deleteNewEquipmentRequest(@request.Id)">Delete</button>
 					}					
 				</td>
 			</tr>

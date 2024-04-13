@@ -36,8 +36,8 @@ h3 {
 				<td>@item.FirstName</td>
 				<td>@item.LastName</td>
 				<td>@item.Team.Name</td>
-				<td><a href="#" onclick="loadEditView(@item.Id)">[Edit]  </a>  
-				<a href="#" onclick="location.href='@Url.Action("Delete", "Manager", new { Id = item.Id })'">   [X]</a></td>
+				<td><button type="button" class="btn btn-primary" onclick="loadEditView(@item.Id)">Edit</button>  
+				<button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Delete", "Manager", new { Id = item.Id })'">Delete</button></td>
 			</tr>
 		}
 	</tbody>

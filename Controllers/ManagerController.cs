@@ -124,6 +124,8 @@ namespace VirtualOffice.Controllers
                     return PartialView("_EmployeeList", dataExport);
                 case "settings":
                     return PartialView("_ManagerEditAccount", loggedInEmployee);
+                case "create":
+                    return PartialView("_CreateEmployee");
 
                 default:
                     return PartialView("_ManagerClockIn");
