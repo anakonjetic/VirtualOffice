@@ -54,7 +54,7 @@ namespace VirtualOffice.Controllers
 
             var clockIns = getClockIns();
 
-            var teamManagers = GetManagersByTeam(null);
+            var teamManagers = GetManagersByTeam(null);        
 
 
             var teamManagementModel = new TeamManagementWrapperModel
@@ -79,6 +79,8 @@ namespace VirtualOffice.Controllers
 
             var requestModel = setRequestTableModel();
 
+            var equipmentModel = setEquipmentForManagerTabModel();
+
             //dohvaćanje podataka za model poslan u partial view --end
 
             //dohvaćanje Partial View objekata ovisno o odabranom Nav Itemu
@@ -93,7 +95,7 @@ namespace VirtualOffice.Controllers
                 case "office":
                     return PartialView("_ManagerOutOfOffice", requestModel);
                 case "equipment":
-                    return PartialView("_ManagerEquipmentManagement");
+                    return PartialView("_ManagerEquipmentManagement", equipmentModel);
                 case "clock":
                     return PartialView("_ManagerClockIn", clockIn);
                 case "hierarchy":
@@ -547,6 +549,48 @@ namespace VirtualOffice.Controllers
 
         }
 
+        public IActionResult EquipmentRequestDecision(RequestEquipmentManagerViewModel model)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == model.RequestID).Include(r => r.Status).FirstOrDefault();
+            var employee = _dbContext.Employee.Where(e => e.Id == model.EmployeeID).FirstOrDefault();
+            var requestedEquipment = _dbContext.Equipment
+                .Where(e => e.Name == _dbContext.RequestType
+                        .Where(r => r.Id == request.RequestTypeID)
+                            .Select(r => r.Name).FirstOrDefault()).FirstOrDefault();
+            
+
+            if ((bool)model.IsApproved)
+            {
+                request.StatusId = 3;
+
+                var assignedEquipmentIds = new List<int>();
+
+                foreach (var id in employee.EquipmentId.Split('#'))
+                {
+                    assignedEquipmentIds.Add(int.Parse(id));
+                };
+
+                /*var assignedEquipment = _dbContext.Equipment.Where(e => assignedEquipmentIds.Contains(e.Id)).ToList();*/
+
+                if (!assignedEquipmentIds.Contains(requestedEquipment.Id))
+                {
+                    assignedEquipmentIds.Add(requestedEquipment.Id);
+                    employee.EquipmentId = String.Join('#', assignedEquipmentIds);
+                }
+            }
+            else
+            {
+                request.StatusId = 4;
+                request.Comment = model.Comment; 
+            }
+
+            _dbContext.SaveChanges();
+
+            return View("ManagerHomePage", "equipment");
+
+        }
+        
+
         [HttpPost]
         public IActionResult Create(Employee model)
         {
@@ -904,6 +948,32 @@ namespace VirtualOffice.Controllers
             return PartialView("_ManagerOoOSummary", requestModel);
         }
 
+        public IActionResult RequestEquipmentManagerDetails(int requestId)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            var employee = _dbContext.Employee.Where(e => e.Id == request.EmployeeId).FirstOrDefault();
+
+            var isRequestClosed = request.StatusId == 3 || request.StatusId == 4 ? true : false;
+
+            var requestModel = new RequestEquipmentManagerViewModel
+            {
+                RequestTypeID = request.RequestTypeID,
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id != 1 && rt.Id != 2).ToList(),
+                Summary = request.Summary,
+                AdditionalInfo = request.AdditionalInfo,
+                Quantity = (int)request.Quantity,
+                RemainingDays = 0,
+                IsRequestClosed = isRequestClosed,
+                IsRequestApprovable = true,
+                EmployeeFullName = employee.FullName,
+                EmployeeID = employee.Id,
+                RequestID = request.Id
+            };
+
+            return PartialView("_ManagerEquipmentSummary", requestModel);
+        }
+
         public List<RequestManagementWrapperModel> setRequestTableModel()
         {
             string loggedInUserId = User.Identity.Name;
@@ -915,7 +985,7 @@ namespace VirtualOffice.Controllers
             var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
 
             var requests = _dbContext.Request
-                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1)
+                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1 && r.RequestTypeID == 1 || r.RequestTypeID == 2)
                 .ToList();
 
             var wrapperModels = new List<RequestManagementWrapperModel>();
@@ -939,7 +1009,68 @@ namespace VirtualOffice.Controllers
 
            return wrapperModels = wrapperModels.OrderBy(w => w.StatusId).ThenBy(w => requests.First(r => r.Id == w.Id).CreatedDate).ToList();
         }
+
+        public EquipmentManagerWrapperModel setEquipmentForManagerTabModel()
+        {
+            string loggedInUserId = User.Identity.Name;
+
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            var assignedEquipmentIds = new List<int>();
+
+            foreach (var id in loggedInEmployee.EquipmentId.Split('#'))
+            {
+                assignedEquipmentIds.Add(int.Parse(id));
+            };
+
+            var assignedEquipment = _dbContext.Equipment.Where(e => assignedEquipmentIds.Contains(e.Id)).ToList();
+
+            var teamId = loggedInEmployee.TeamId;
+
+            var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
+
+            var requests = _dbContext.Request
+                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1 && r.RequestTypeID != 1 && r.RequestTypeID != 2)
+                .ToList();
+
+            foreach (var eq in assignedEquipment)
+            {
+                eq.EquipmentCategory = _dbContext.EquipmentCategory.Where(c => c.Id == eq.CategoryId).FirstOrDefault();
+            }
+
+            var requestModels = new List<EquipmentManagerRequestModel>();
+
+            foreach (var req in requests)
+            {
+                var requestEmployee = _dbContext.Employee.Where(e => e.Id == req.EmployeeId).FirstOrDefault();
+                var requestModel = new EquipmentManagerRequestModel
+                {                    
+                    Id = req.Id,
+                    Summary = req.Summary,
+                    Type = _dbContext.RequestType.Where(t => t.Id == req.RequestTypeID).FirstOrDefault()?.Name,
+                    Status = _dbContext.Status.Where(s => s.Id == req.StatusId).FirstOrDefault()?.Name,
+                    StatusId = (int)(_dbContext.Status.Where(s => s.Id == req.StatusId).FirstOrDefault()?.Id),
+                    CreatedDate = req.CreatedDate,
+                    EmployeeFullName = requestEmployee.FullName
+                    
+                };
+                requestModels.Add(requestModel);
+            }
+
+            var wrapperModels = new EquipmentManagerWrapperModel
+            {
+                Equipment = assignedEquipment,
+                EquipmentRequests = requestModels
+            };
+
+
+
+            return wrapperModels;
+        }
+
+
     }
+
 
     //u partial view se može slati jedan item, pa je više podataka wrappano
     public class TeamManagementWrapperModel
@@ -1006,6 +1137,52 @@ namespace VirtualOffice.Controllers
         public int Quantity { get; set; }
         public int RemainingDays { get; set; }
         
+        public bool IsRequestClosed { get; set; }
+        public bool IsRequestApprovable { get; set; }
+
+        public bool? IsApproved { get; set; }
+        public bool? IsRejected { get; set; }
+        public string? Comment { get; set; }
+
+        public string EmployeeFullName { get; set; }
+        public int EmployeeID { get; set; }
+    }
+
+    public class EquipmentManagerWrapperModel
+    {
+        public List<Equipment> Equipment { get; set; }
+
+        public List<EquipmentManagerRequestModel> EquipmentRequests { get; set; }
+
+    }
+
+    public class EquipmentManagerRequestModel
+    {
+        public string Id { get; set; }
+        public string Summary { get; set; }
+        public string Type { get; set; }
+        public string Status { get; set; }
+        public int StatusId { get; set; }
+        public string EmployeeFullName { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+
+    }
+
+    public class RequestEquipmentManagerViewModel
+    {
+        public string RequestID { get; set; }
+        public int RequestTypeID { get; set; }
+
+        public List<RequestType> RequestTypes { get; set; }
+
+        public string Summary { get; set; }
+
+        public string AdditionalInfo { get; set; }
+        public int Quantity { get; set; }
+        public int RemainingDays { get; set; }
+
         public bool IsRequestClosed { get; set; }
         public bool IsRequestApprovable { get; set; }
 

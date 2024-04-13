@@ -355,6 +355,23 @@
 
     //loadanje request ooo summary --end
 
+     //loadanje request equipment summary --start
+
+     function loadRequestEquipmentManagerDetailView(requestId) {
+      const url = '@Url.Action("RequestEquipmentManagerDetails", "Manager")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //loadanje request equipment summary --end
+
+
     //approvanje i declineanje requesta --start
 
     function approveRequest() {
@@ -379,6 +396,31 @@
     }
 
     //approvanje i declineanje requesta --end
+
+    //approvanje i declineanje equipment requesta --start
+
+    function approveEquipmentRequest() {
+        document.getElementById('IsApprovedEquipment').value = true;
+        document.getElementById('IsRejectedEquipment').value = false;
+        document.getElementById('equipmentRequest').submit(); 
+    }
+
+    function declineEquipmentRequest() {
+        document.getElementById('IsApprovedEquipment').value = false;
+        document.getElementById('IsRejectedEquipment').value = true;
+    }
+
+    function showEquipmentCommentSection() {
+        declineEquipmentRequest();
+        document.getElementById('equipmentCommentSection').style.display = 'block';
+        document.getElementById('equipmentApprovalButtons').style.display = 'none';
+    }
+
+    function submitComment() {
+        document.getElementById('equipmentRequest').submit();
+    }
+
+    //approvanje i declineanje equipment requesta --end
    
     function exportToExcel() {
         console.log('Exporting to Excel...');
