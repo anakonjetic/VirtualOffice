@@ -311,13 +311,29 @@ namespace VirtualOffice.Controllers
             var requestModel = new RequestOoOViewModel
             {
                 RequestTypeID = request.RequestTypeID,
-                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id == 1 || rt.Id == 2 || rt.Id == 3 || rt.Id == 4).ToList(),
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id == 1 || rt.Id == 2).ToList(),
                 Summary = request.Summary,
                 AdditionalInfo = request.AdditionalInfo,
                 Quantity = (int)request.Quantity
             };
 
             return PartialView("_EmployeeOoOSummary", requestModel);
+        }
+
+        public IActionResult RequestEquipmentDetails(int requestId)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            var requestModel = new RequestOoOViewModel
+            {
+                RequestTypeID = request.RequestTypeID,
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id != 1 && rt.Id != 2).ToList(),
+                Summary = request.Summary,
+                AdditionalInfo = request.AdditionalInfo,
+                Quantity = (int)request.Quantity
+            };
+
+            return PartialView("_EmployeeEquipmentRequestSummary", requestModel);
         }
 
         public List<RequestWrapperModel> setRequestTableModel()

@@ -361,7 +361,21 @@
 
     //obriši equipment request --end
 
-    
+    //loadanje request equipment summary --start
+
+     function loadRequestEquipmentDetailView(requestId) {
+      const url = '@Url.Action("RequestEquipmentDetails", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //loadanje request equipment summary --end
     
 
     //loadanje request ooo summary --start
