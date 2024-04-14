@@ -317,7 +317,7 @@
     //loadanje create employee partiala u content div--start
 
     function createTeam() {
-      const url = '@Url.Action("Create", "Manager")?teamId=' + null;
+      const url = '@Url.Action("TeamCreate", "Manager")?teamId=' + null;
       fetch(url)
         .then(response => response.text())
         .then(data => {

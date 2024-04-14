@@ -163,12 +163,23 @@ namespace VirtualOffice.Controllers
             string loggedInUserId = User.Identity.Name;
             Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
 
-            var lastReq = _dbContext.Request.OrderByDescending(r => r.Id).FirstOrDefault();
+            var allReqIds = _dbContext.Request.Select(r => r.Id).ToList();
+
+            var intListOfIds = new List<int>();
+
+            foreach(var id in allReqIds)
+            {
+                var intId = int.Parse(id.ToString());
+                intListOfIds.Add(intId);
+            }
+
+            var lastReq = intListOfIds.OrderByDescending(id => id).FirstOrDefault();
+
             var reqId = 0;
 
             if (lastReq != null)
             {
-                reqId = Int32.Parse(lastReq.Id) + 1;
+                reqId = lastReq + 1;
             }
             else
             {
@@ -211,12 +222,23 @@ namespace VirtualOffice.Controllers
             string loggedInUserId = User.Identity.Name;
             Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
 
-            var lastReq = _dbContext.Request.OrderByDescending(r => r.Id).FirstOrDefault();
+            var allReqIds = _dbContext.Request.Select(r => r.Id).ToList();
+
+            var intListOfIds = new List<int>();
+
+            foreach (var id in allReqIds)
+            {
+                var intId = int.Parse(id.ToString());
+                intListOfIds.Add(intId);
+            }
+
+            var lastReq = intListOfIds.OrderByDescending(id => id).FirstOrDefault();
+
             var reqId = 0;
 
             if (lastReq != null)
             {
-                reqId = Int32.Parse(lastReq.Id) + 1;
+                reqId = lastReq + 1;
             }
             else
             {
