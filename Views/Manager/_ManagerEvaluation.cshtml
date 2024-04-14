@@ -1,30 +1,29 @@
 ﻿@model VirtualOffice.Controllers.EmployeeEvaluationViewModel
 
 <style>
+    #evaluation-form-wrapper {
+        display: none;
+    }
+
+    .centriranje {
+        display:flex;
+        flex-direction:column;
+        align-items: center;
+    }
     #form-and-table-container {
         display: flex;
         flex-direction: row; /* Display items horizontally */
         align-items: center; /* Align items to the start (left) */
     }
 
-    #evaluation-form-wrapper {
-        width: 50%; /* Set the width of the form container */
-        padding-right: 20px; /* Add some space between the form and the table */
-    }
-
-    #evaluation-form-list {
-        width: 50%; /* Set the width of the table container */
-        margin-top: 30px;
-    }
-
     #evaluation-form {
         width: 600px;
-        padding: 20px;
+        padding: 30px;
         background-color: #fff;
         border: 1px solid #ccc;
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-        
+        margin-bottom:20px;
     }
 
     #employee-name {
@@ -91,7 +90,6 @@
     #form-and-table-container {
         display: flex;
         flex-direction: column; /* Display items vertically */
-        align-items: flex-start; /* Align items to the start (left) */
     }
 
     #evaluation-form {
@@ -128,106 +126,110 @@
     background-color: #f5f5f5; 
     border-radius: 5px; 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    margin: 10px; 
+    margin: 10px;
+
 }
 </style>
 
 <h3>Evaluation Forms</h3>
 <br/>
-<div>
-    <h4>Click on a card to evaluate employee:</h4>
-    <!-- Updated HTML structure for employee labels -->
-    <div class="employee-list">
-        @foreach (var employee in Model.Employees)
-        {
-            if (!employee.Equals(Model.LoggedInEmployee))
+<div class="centriranje">
+    <div>
+        <h4>Click on a card to evaluate employee:</h4>
+        <!-- Updated HTML structure for employee labels -->
+        <div class="employee-list">
+            @foreach (var employee in Model.Employees)
             {
-                <div class="employee-card" onclick="showEvaluationForm('@employee.Id', '@employee.FirstName @employee.LastName', '@Model.LoggedInEmployee.Id')">
-                    <label class="employee-label" data-employee-id="@employee.Id">@employee.FirstName @employee.LastName</label>
-                </div>
+                if (!employee.Equals(Model.LoggedInEmployee))
+                {
+                    <div class="employee-card" onclick="showEvaluationForm('@employee.Id', '@employee.FirstName @employee.LastName', '@Model.LoggedInEmployee.Id')">
+                        <label class="employee-label" data-employee-id="@employee.Id">@employee.FirstName @employee.LastName</label>
+                    </div>
+                }
             }
-        }
-    </div>
-</div>
-
-<div id="form-and-table-container">
-    <div id="evaluation-form-wrapper">
-        <div id="evaluation-form">
-            <h1 id="employee-name"></h1> <!-- Employee Name -->
-            @* <form id="evaluation-form-inner" asp-action="SubmitEvaluation" method="post"> *@
-            <form id="evaluation-form-inner" action="/Manager/SubmitEvaluation1" method="post">
-                @* <input type="hidden" asp-for="EmployeeId" /> *@
-                <input type="hidden" id="employeeId" name="EmployeeId" />
-                <input type="hidden" id="managerId" name="ManagerId" />
-                <input type="hidden" id="evaluationTypeId" name="EvaluationTypeId" />
-
-                <div>
-                    <div>
-                        <label>Form Title:</label>
-                        <input type="text" asp-for="EvaluationForm.FormTitle" />
-                    </div>
-                    <div>
-                        <label>Form Description:</label>
-                        <textarea asp-for="EvaluationForm.FormDescription"></textarea>
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>Rating:</label>
-                        <input type="range" id="ratingSlider" min="1" max="10" step="1" oninput="updateRating(this.value)" />
-                        <span id="ratingValue">5</span>
-                        <input type="hidden" asp-for="EvaluationForm.Rating" id="ratingInput" value="5" />
-                    </div>
-                    <div>
-                        <label>Date:</label>
-                        <input type="date" asp-for="EvaluationForm.Date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <label>Evaluation Type:</label>
-                        <select id="evaluationType" class="form-control">
-                            <option value="" disabled selected>Please select</option>
-                            @foreach (var evaluationType in Model.EvaluationType)
-                            {
-                                <option value="@evaluationType.Id">@evaluationType.Name</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit Evaluation</button>
-            </form>
         </div>
     </div>
 
-    <!-- Table for EvaluationFormList -->
-    <div id="evaluation-form-list">
-        <h2>Evaluation Form List</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Employee Name</th>
-                    <th>Form Title</th>
-                    <th>Form Description</th>
-                    <th>Date</th>
-                    <th>Evaluation Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var evaluationForm in Model.EvaluationFormList)
-                {
+    <div id="form-and-table-container">
+        <div id="evaluation-form-wrapper">
+            <div id="evaluation-form">
+                <h1 id="employee-name"></h1> <!-- Employee Name -->
+                @* <form id="evaluation-form-inner" asp-action="SubmitEvaluation" method="post"> *@
+                <form id="evaluation-form-inner" action="/Manager/SubmitEvaluation1" method="post">
+                    @* <input type="hidden" asp-for="EmployeeId" /> *@
+                    <input type="hidden" id="employeeId" name="EmployeeId" />
+                    <input type="hidden" id="managerId" name="ManagerId" />
+                    <input type="hidden" id="evaluationTypeId" name="EvaluationTypeId" />
+
+                    <div>
+                        <div>
+                            <label>Form Title:</label>
+                            <input type="text" asp-for="EvaluationForm.FormTitle" style="margin-right: 10px;" />
+
+                        </div>
+                        <div>
+                            <label>Form Description:</label>
+                            <textarea asp-for="EvaluationForm.FormDescription"></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>Rating:</label>
+                            <input type="range" id="ratingSlider" min="1" max="10" step="1" oninput="updateRating(this.value)" />
+                            <span id="ratingValue">5</span>
+                            <input type="hidden" asp-for="EvaluationForm.Rating" id="ratingInput" value="5" />
+                        </div>
+                        <div>
+                            <label>Date:</label>
+                            <input type="date" asp-for="EvaluationForm.Date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label>Evaluation Type:</label>
+                            <select id="evaluationType" class="form-control">
+                                <option value="" disabled selected>Please select</option>
+                                @foreach (var evaluationType in Model.EvaluationType)
+                                {
+                                    <option value="@evaluationType.Id">@evaluationType.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Evaluation</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table for EvaluationFormList -->
+        <div id="evaluation-form-list">
+            <h2>Evaluation Form List</h2>
+            <table>
+                <thead>
                     <tr>
-                        <td>@evaluationForm.Employee.FirstName @evaluationForm.Employee.LastName</td>
-                        <td>@evaluationForm.FormTitle</td>
-                        <td>@evaluationForm.FormDescription</td>
-                        <td>@evaluationForm.Date.ToString("yyyy-MM-dd")</td>
-                        <td>@evaluationForm.EvaluationType.Name</td>
+                        <th>Employee Name</th>
+                        <th>Form Title</th>
+                        <th>Form Description</th>
+                        <th>Date</th>
+                        <th>Evaluation Type</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var evaluationForm in Model.EvaluationFormList)
+                    {
+                        <tr>
+                            <td>@evaluationForm.Employee.FirstName @evaluationForm.Employee.LastName</td>
+                            <td>@evaluationForm.FormTitle</td>
+                            <td>@evaluationForm.FormDescription</td>
+                            <td>@evaluationForm.Date.ToString("yyyy-MM-dd")</td>
+                            <td>@evaluationForm.EvaluationType.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
+
+
+
 </div>
-
-
-
