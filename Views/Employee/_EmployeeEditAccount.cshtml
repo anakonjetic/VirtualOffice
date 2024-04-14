@@ -1,5 +1,14 @@
 ﻿@model Employee
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialViewEmployee('clockIn')">Clock In - Clock Out</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+           <p>Edit Employee</p>
+        </li>
+    </ol>
+</nav>
+
 <form asp-action="EditAccount" asp-controller="Employee" method="post">
 	<input type="hidden" name="id" asp-for="Id" value="@Model.Id" />
 	<div class="form-group">

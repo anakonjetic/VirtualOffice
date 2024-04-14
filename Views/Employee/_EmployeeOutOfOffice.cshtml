@@ -1,5 +1,17 @@
-﻿
+﻿<style>h3 {
+    font-size: 1.5rem; 
+    font-weight: bold;
+    color: #333; 
+    text-align: center; 
+    padding: 10px; 
+    background-color: #f5f5f5; 
+    border-radius: 5px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    margin: 10px; 
+}</style>
 
+<h3>Out of Office Forms</h3>
+<br/>
 <div class="col" style="margin-bottom:20px;">
 			<button type="button" onclick="createRequest()" class="btn btn-success">NEW REQUEST</button>
 </div>
@@ -24,8 +36,8 @@
 				<td>
 					@if (@request.SendToApproval == true)
 					{
-					  <a href="#" onclick="sendOoOToApproval(@request.Id)">[send to approval]</a>
-					  <a href="#" onclick="deleteNewOoORequest(@request.Id)">[x]</a>
+					  <button type="button" class="btn btn-primary" onclick="sendOoOToApproval(@request.Id)">Send to Approval</button>
+					  <button type="button" class="btn btn-danger" onclick="deleteNewOoORequest(@request.Id)">Delete</button>
 					}					
 				</td>
 			</tr>

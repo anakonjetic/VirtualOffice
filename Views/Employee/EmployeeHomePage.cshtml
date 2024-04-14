@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @* @inject UserManager<IdentityUser> UserManager *@
 @{
     Layout = null; // Remove layout inheritance
@@ -122,7 +122,6 @@
 <body>
     <nav class="vertical-nav">
         <ul>
-            <li><a href="#" data-target="home">Home</a></li>
             <li><a href="#" data-target="evaluation">Evaluation Form</a></li>
             <li><a href="#" data-target="outOfOffice">Out of Office Forms</a></li>
             <li><a href="#" data-target="equipment">Equipment Management</a></li>
@@ -157,7 +156,6 @@
         }
     }@userId</div>
     <div class="dropdown" id="dropdown">
-        <a href="#">Profile</a>
         <a href="#" data-target="settings" id="settings">Settings</a>
         <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">Logout</a>
     </div>
@@ -177,7 +175,7 @@
         if (modelString.trim() !== '') {
             loadPartialViewEmployee(modelString);
         }else{
-            loadPartialViewEmployee('home')
+            loadPartialViewEmployee('clockIn')
         }       
         });
         //loadanje partiala po loadanju stranice --end
@@ -315,6 +313,22 @@
 
     //pošalji request na manager approval --end
 
+    //pošalji equipment request na manager approval --start
+
+     function sendEquipmentToApproval(requestId) {
+      const url = '@Url.Action("SendEquipmentRequestToApproval", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+     //pošalji equipment request na manager approval --end
+    
+
     //obriši OoO request --start
 
     function deleteNewOoORequest(requestId) {
@@ -331,6 +345,39 @@
 
     //obriši OoO request --end
 
+    //obriši equipment request --start
+
+    function deleteNewEquipmentRequest(requestId) {
+      const url = '@Url.Action("DeleteEquipmentRequest", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //obriši equipment request --end
+
+    //loadanje request equipment summary --start
+
+     function loadRequestEquipmentDetailView(requestId) {
+      const url = '@Url.Action("RequestEquipmentDetails", "Employee")?requestId=' + requestId;
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    //loadanje request equipment summary --end
+    
+
     //loadanje request ooo summary --start
 
      function loadRequestOoODetailView(requestId) {
@@ -346,6 +393,22 @@
     }
 
     //loadanje request ooo summary --end
+
+
+    //create request (equipment) logika --start
+
+     function equipmentCreateRequest() {
+      const url = '@Url.Action("RequestEquipmentCreate", "Employee")';
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content2').innerHTML = data;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    //create request (equipment) logika --end
 
     function updateRating2(value) {
         document.getElementById("ratingValue").innerText = value;
@@ -371,7 +434,6 @@
             document.getElementById('evaluationTypeId').value = selectedValue;
         });
     }
-
 
   </script>
 
