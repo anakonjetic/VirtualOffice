@@ -46,6 +46,9 @@
     <br /><br /><br /><br /><br /><br /><br />
     @if(!SignInManager.IsSignedIn(User))
     {
-        <button type="button" class="btn btn-primary col-3"><a class="btn-primary text-white" asp-area="Identity" asp-page="/Account/Login">Login</a></button>
+        @if (!SignInManager.IsSignedIn(User))
+        {
+            <a class="btn btn-primary col-3" href="/Identity/Account/Login">Login</a>
+        }
     }
 </div>
