@@ -1,11 +1,32 @@
 ﻿@model List<Employee>
 
+<style>
+h3 {
+    font-size: 1.5rem; 
+    font-weight: bold;
+    color: #333; 
+    text-align: center; 
+    padding: 10px; 
+    background-color: #f5f5f5; 
+    border-radius: 5px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    margin: 10px; 
+}
+</style>
+
+<h3>Employee Management</h3>
+<br/>
+
+<div class="col" style="margin-bottom:20px;">
+	<button type="button" onclick="loadPartialView('create')" class="btn btn-success">NEW EMPLOYEE</button>
+</div>
 <table style="margin-top: 20px;" class="table table-condensed">
 	<thead>
 		<tr>
 			<th>First Name</th>
 			<th>Last Name</th>
 			<th>Team</th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -15,8 +36,8 @@
 				<td>@item.FirstName</td>
 				<td>@item.LastName</td>
 				<td>@item.Team.Name</td>
-				<td><a href="#" onclick="loadEditView(@item.Id)">[Edit]</a></td>
-				<td><button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Delete", "Manager", new { Id = item.Id })'">Delete</button></td>
+				<td><button type="button" class="btn btn-primary" onclick="loadEditView(@item.Id)">Edit</button>  
+				<button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("Delete", "Manager", new { Id = item.Id })'">Delete</button></td>
 			</tr>
 		}
 	</tbody>

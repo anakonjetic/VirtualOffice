@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -7,12 +7,12 @@ using System.Text;
 using VirtualOffice.Data;
 using VirtualOffice.Models;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace VirtualOffice.Controllers
 {
     public class ManagerController : Controller
     {
-
         private ApplicationDbContext _dbContext;
         private UserManager<IdentityUser> _userManager;
         private DateTime? clockInTime; // Variable to store clock in time
@@ -57,7 +57,7 @@ namespace VirtualOffice.Controllers
 
             var clockIns = getClockIns();
 
-            var teamManagers = GetManagersByTeam(null);
+            var teamManagers = GetManagersByTeam(null);        
 
             var evaluationForm = CreateEvaluationForm();
 
@@ -88,6 +88,8 @@ namespace VirtualOffice.Controllers
 
             var requestModel = setRequestTableModel();
 
+            var equipmentModel = setEquipmentForManagerTabModel();
+
             var evaluationModel = new EmployeeEvaluationViewModel
             {
                 Employees = employeeModel,
@@ -98,13 +100,12 @@ namespace VirtualOffice.Controllers
             };
 
 
+
             //dohvaćanje podataka za model poslan u partial view --end
 
             //dohvaćanje Partial View objekata ovisno o odabranom Nav Itemu
             switch (target)
             {
-                case "home":
-                    return PartialView("_ManagerHome");
                 case "employee":
                     return PartialView("_ManagerEmployeeTable", employeeModel); //napravljen samo popis zaposlenika iz timova koji su predvođeni logged in userom
                 case "evaluation":
@@ -112,7 +113,7 @@ namespace VirtualOffice.Controllers
                 case "office":
                     return PartialView("_ManagerOutOfOffice", requestModel);
                 case "equipment":
-                    return PartialView("_ManagerEquipmentManagement");
+                    return PartialView("_ManagerEquipmentManagement", equipmentModel);
                 case "clock":
                     return PartialView("_ManagerClockIn", clockIn);
                 case "hierarchy":
@@ -120,14 +121,14 @@ namespace VirtualOffice.Controllers
                 case "team":
                     return PartialView("_ManagerTeamTable", teamManagementModel);
                 case "export":
-                    return PartialView("_ManagerDataExport", dataExport);
-                case "list":
                     return PartialView("_EmployeeList", dataExport);
+                case "settings":
+                    return PartialView("_ManagerEditAccount", loggedInEmployee);
                 case "create":
                     return PartialView("_CreateEmployee");
 
                 default:
-                    return PartialView("_ManagerHome");
+                    return PartialView("_ManagerClockIn", clockIn);
             }
         }
 
@@ -315,7 +316,8 @@ namespace VirtualOffice.Controllers
             ViewData["Managers"] = managers;
             ViewData["Employees"] = teamEmployees;
 
-            var teamViewModel = new TeamViewModel { 
+            var teamViewModel = new TeamViewModel
+            {
                 Id = team.Id,
                 Name = team.Name,
                 ManagerId = _dbContext.Employee
@@ -325,7 +327,7 @@ namespace VirtualOffice.Controllers
                 Managers = managers,
                 SelectedEmployeeIds = teamEmployees.Select(e => e.Id).ToList(),
                 AvailableEmployees = allEmployees
-                };
+            };
 
             return PartialView("_TeamCreate", teamViewModel);
         }
@@ -352,7 +354,8 @@ namespace VirtualOffice.Controllers
         {
             Team team;
 
-            if (model.Id == 0) {
+            if (model.Id == 0)
+            {
                 team = new Team();
 
                 team.Name = model.Name;
@@ -367,7 +370,7 @@ namespace VirtualOffice.Controllers
                        .Where(e => model.SelectedEmployeeIds.Contains(e.Id))
                        .ToList();
 
-               
+
 
                 var employeeManager = new EmployeeManager
                 {
@@ -393,7 +396,7 @@ namespace VirtualOffice.Controllers
                            .Where(em => em.EmployeeId == selectedManagerId && _dbContext.Employee.Any(e => e.TeamId == team.Id))
                            .ToList();
 
-                _dbContext.EmployeeManager.RemoveRange(employeesToRemove);               
+                _dbContext.EmployeeManager.RemoveRange(employeesToRemove);
 
                 _dbContext.SaveChanges();
 
@@ -404,7 +407,7 @@ namespace VirtualOffice.Controllers
                        .Include(t => t.Employee)
                        .FirstOrDefault(t => t.Id == model.Id);
 
-                
+
                 team.Name = model.Name;
 
                 var selectedManagerId = model.ManagerId;
@@ -416,7 +419,7 @@ namespace VirtualOffice.Controllers
 
                 if (selectedManagerId != 0)
                 {
-                    var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList(); 
+                    var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == team.Id).ToList();
                     var selectedEmployees = _dbContext.Employee
                            .Where(e => model.SelectedEmployeeIds.Contains(e.Id))
                            .ToList();
@@ -425,7 +428,7 @@ namespace VirtualOffice.Controllers
                     {
                         if (!selectedEmployees.Select(e => e.Id).ToList().Contains(teamEmployee.Id))
                         {
-                            
+
                             teamEmployee.TeamId = 1;
                         }
                     }
@@ -478,17 +481,17 @@ namespace VirtualOffice.Controllers
                             }
                         }
 
-                        
+
                     }
 
-                    
+
 
 
                     _dbContext.SaveChanges();
                 }
             }
 
-            
+
 
             return PartialView("ManagerHomePage", "team");
         }
@@ -497,11 +500,11 @@ namespace VirtualOffice.Controllers
         {
             string loggedInUserId = User.Identity.Name;
             var team = _dbContext.Team.FirstOrDefault(t => t.Id == teamId);
-           
+
 
             var employeesToReassign = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
 
-            var team1Id = 1; 
+            var team1Id = 1;
             foreach (var employee in employeesToReassign)
             {
                 employee.TeamId = team1Id;
@@ -511,7 +514,7 @@ namespace VirtualOffice.Controllers
             _dbContext.Remove(team);
 
             var managementToDelete = _dbContext.EmployeeManager
-                .Where(e => e.ManagerId == e.EmployeeId && _dbContext.Employee.Any(em=> employeesToReassign.Select(res => res.Id).Contains( em.Id) && em.Id == e.ManagerId))
+                .Where(e => e.ManagerId == e.EmployeeId && _dbContext.Employee.Any(em => employeesToReassign.Select(res => res.Id).Contains(em.Id) && em.Id == e.ManagerId))
                 .ToList();
 
             _dbContext.RemoveRange(managementToDelete);
@@ -525,7 +528,7 @@ namespace VirtualOffice.Controllers
             var teamManagers = GetManagersByTeam(null);
 
             var managedTeamIds = GetTeamManagementModel(loggedInUserId);
-            
+
             var teamManagementModel = new TeamManagementWrapperModel
             {
                 TeamList = teamModel,
@@ -542,7 +545,7 @@ namespace VirtualOffice.Controllers
             var request = _dbContext.Request.Where(r => r.Id == model.RequestID).Include(r => r.Status).FirstOrDefault();
             var employee = _dbContext.Employee.Where(e => e.Id == model.EmployeeID).FirstOrDefault();
 
-            if(request.RequestTypeID == 1)
+            if (request.RequestTypeID == 1)
             {
                 if ((bool)model.IsApproved)
                 {
@@ -554,7 +557,8 @@ namespace VirtualOffice.Controllers
                     request.Comment = model.Comment;
                     employee.RemainingDaysOff = model.RemainingDays;
                 }
-            } else if (request.RequestTypeID == 2)
+            }
+            else if (request.RequestTypeID == 2)
             {
                 employee.SickLeaveDaysUsed += model.Quantity;
                 request.StatusId = 3;
@@ -565,6 +569,48 @@ namespace VirtualOffice.Controllers
             return View("ManagerHomePage", "office");
 
         }
+
+        public IActionResult EquipmentRequestDecision(RequestEquipmentManagerViewModel model)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == model.RequestID).Include(r => r.Status).FirstOrDefault();
+            var employee = _dbContext.Employee.Where(e => e.Id == model.EmployeeID).FirstOrDefault();
+            var requestedEquipment = _dbContext.Equipment
+                .Where(e => e.Name == _dbContext.RequestType
+                        .Where(r => r.Id == request.RequestTypeID)
+                            .Select(r => r.Name).FirstOrDefault()).FirstOrDefault();
+            
+
+            if ((bool)model.IsApproved)
+            {
+                request.StatusId = 3;
+
+                var assignedEquipmentIds = new List<int>();
+
+                foreach (var id in employee.EquipmentId.Split('#'))
+                {
+                    assignedEquipmentIds.Add(int.Parse(id));
+                };
+
+                /*var assignedEquipment = _dbContext.Equipment.Where(e => assignedEquipmentIds.Contains(e.Id)).ToList();*/
+
+                if (!assignedEquipmentIds.Contains(requestedEquipment.Id))
+                {
+                    assignedEquipmentIds.Add(requestedEquipment.Id);
+                    employee.EquipmentId = String.Join('#', assignedEquipmentIds);
+                }
+            }
+            else
+            {
+                request.StatusId = 4;
+                request.Comment = model.Comment; 
+            }
+
+            _dbContext.SaveChanges();
+
+            return View("ManagerHomePage", "equipment");
+
+        }
+        
 
         [HttpPost]
         public IActionResult Create(Employee model)
@@ -682,6 +728,21 @@ namespace VirtualOffice.Controllers
             return View("ManagerHomePage", "employee");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> EditAccount(int id)
+        {
+            var model = this._dbContext.Employee.Single(d => d.Id == id);
+            var ok = await this.TryUpdateModelAsync(model);
+
+            if (ok && ModelState.IsValid)
+            {
+                this._dbContext.SaveChanges();
+                return View("ManagerHomePage", "employee");
+            }
+
+            return View("ManagerHomePage", "employee");
+        }
+
 
         //dohvaćanje svih zaposlenika koji se nalaze u timovima menadžiranih od strane logged in usera
         private List<Employee> GetEmployeeManagementModel(string loggedInUserId)
@@ -746,8 +807,8 @@ namespace VirtualOffice.Controllers
             var managers = new List<string>();
 
             var teams = new List<Team>();
-                
-                if(teamIds != null)
+
+            if (teamIds != null)
             {
                 teams = _dbContext.Team.Include(t => t.Employee)
                     .ToList()
@@ -845,7 +906,7 @@ namespace VirtualOffice.Controllers
                 TeamList = model,
                 IntList = managedTeamIds,
                 ManagerNames = teamManagers
-            }; 
+            };
 
             return PartialView("_ManagerTeamTable", teamManagementModel);
         }
@@ -861,7 +922,7 @@ namespace VirtualOffice.Controllers
             var teamsQuery = _dbContext.Team.AsQueryable();
 
 
-            
+
 
             var testSortDir = sortDirection;
 
@@ -924,6 +985,32 @@ namespace VirtualOffice.Controllers
             return PartialView("_ManagerOoOSummary", requestModel);
         }
 
+        public IActionResult RequestEquipmentManagerDetails(int requestId)
+        {
+            var request = _dbContext.Request.Where(r => r.Id == requestId.ToString()).FirstOrDefault();
+
+            var employee = _dbContext.Employee.Where(e => e.Id == request.EmployeeId).FirstOrDefault();
+
+            var isRequestClosed = request.StatusId == 3 || request.StatusId == 4 ? true : false;
+
+            var requestModel = new RequestEquipmentManagerViewModel
+            {
+                RequestTypeID = request.RequestTypeID,
+                RequestTypes = _dbContext.RequestType.Where(rt => rt.Id != 1 && rt.Id != 2).ToList(),
+                Summary = request.Summary,
+                AdditionalInfo = request.AdditionalInfo,
+                Quantity = (int)request.Quantity,
+                RemainingDays = 0,
+                IsRequestClosed = isRequestClosed,
+                IsRequestApprovable = true,
+                EmployeeFullName = employee.FullName,
+                EmployeeID = employee.Id,
+                RequestID = request.Id
+            };
+
+            return PartialView("_ManagerEquipmentSummary", requestModel);
+        }
+
         public List<RequestManagementWrapperModel> setRequestTableModel()
         {
             string loggedInUserId = User.Identity.Name;
@@ -935,7 +1022,7 @@ namespace VirtualOffice.Controllers
             var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
 
             var requests = _dbContext.Request
-                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1)
+                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1 && r.RequestTypeID == 1 || r.RequestTypeID == 2)
                 .ToList();
 
             var wrapperModels = new List<RequestManagementWrapperModel>();
@@ -958,22 +1045,79 @@ namespace VirtualOffice.Controllers
             }
 
             return wrapperModels = wrapperModels.OrderBy(w => w.StatusId).ThenBy(w => requests.First(r => r.Id == w.Id).CreatedDate).ToList();
-
         }
-        // Method to create and initialize EvaluationForm
-        private EvaluationForm CreateEvaluationForm()
+        
+        public EquipmentManagerWrapperModel setEquipmentForManagerTabModel()
+        {
+            string loggedInUserId = User.Identity.Name;
+
+            Employee loggedInEmployee = this._dbContext.Employee.FirstOrDefault(e => e.UserId == loggedInUserId);
+
+            var assignedEquipmentIds = new List<int>();
+
+            foreach (var id in loggedInEmployee.EquipmentId.Split('#'))
+            {
+                assignedEquipmentIds.Add(int.Parse(id));
+            };
+
+            var assignedEquipment = _dbContext.Equipment.Where(e => assignedEquipmentIds.Contains(e.Id)).ToList();
+
+            var teamId = loggedInEmployee.TeamId;
+
+            var teamEmployees = _dbContext.Employee.Where(e => e.TeamId == teamId).ToList();
+
+            var requests = _dbContext.Request
+                .Where(r => teamEmployees.Select(t => t.Id).Contains(r.EmployeeId) && r.Status.Id != 1 && r.RequestTypeID != 1 && r.RequestTypeID != 2)
+                .ToList();
+
+            foreach (var eq in assignedEquipment)
+            {
+                eq.EquipmentCategory = _dbContext.EquipmentCategory.Where(c => c.Id == eq.CategoryId).FirstOrDefault();
+            }
+
+            var requestModels = new List<EquipmentManagerRequestModel>();
+
+            foreach (var req in requests)
+            {
+                var requestEmployee = _dbContext.Employee.Where(e => e.Id == req.EmployeeId).FirstOrDefault();
+                var requestModel = new EquipmentManagerRequestModel
+                {                    
+                    Id = req.Id,
+                    Summary = req.Summary,
+                    Type = _dbContext.RequestType.Where(t => t.Id == req.RequestTypeID).FirstOrDefault()?.Name,
+                    Status = _dbContext.Status.Where(s => s.Id == req.StatusId).FirstOrDefault()?.Name,
+                    StatusId = (int)(_dbContext.Status.Where(s => s.Id == req.StatusId).FirstOrDefault()?.Id),
+                    CreatedDate = req.CreatedDate,
+                    EmployeeFullName = requestEmployee.FullName
+                    
+                };
+                requestModels.Add(requestModel);
+            }
+
+            var wrapperModels = new EquipmentManagerWrapperModel
+            {
+                Equipment = assignedEquipment,
+                EquipmentRequests = requestModels
+            };
+
+
+
+            return wrapperModels;
+        }
+        
+
+
+         private EvaluationForm CreateEvaluationForm()
         {
             // Initialize and return a new instance of EvaluationForm
             return new EvaluationForm();
         }
-
-        private List<EvaluationType> GetEvaluationType()
+        
+         private List<EvaluationType> GetEvaluationType()
         {
             return _dbContext.EvaluationType.ToList();
         }
-
         
-
         // GET: ManagerController/SubmitEvaluation
         [HttpPost]
         public IActionResult SubmitEvaluation1(EmployeeEvaluationViewModel model)
@@ -990,7 +1134,7 @@ namespace VirtualOffice.Controllers
                 Date = model.EvaluationForm.Date,
                 EvaluationTypeId = model.EvaluationTypeId // Assuming EvaluationTypeId is the correct property name
             };
-            
+
             // Check if the model state is valid
             if (ModelState.IsValid)
             {
@@ -1000,19 +1144,19 @@ namespace VirtualOffice.Controllers
                 {
                     _dbContext.EvaluationForm.Add(evaluationForm);
                     _dbContext.SaveChanges();
-                    return RedirectToAction("Index", "Home");
+                    return View("ManagerHomePage", "evaluation");
 
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", "An error occurred while saving the evaluation form.");
-                    return RedirectToAction("Index", "Home");
+                    return View("ManagerHomePage", "evaluation");
 
                 }
             }
             else
-            { 
-                return RedirectToAction("Index", "Home");
+            {
+                return View("ManagerHomePage", "evaluation");
             }
         }
 
@@ -1021,49 +1165,49 @@ namespace VirtualOffice.Controllers
             return _dbContext.EvaluationForm.ToList();
 
         }
+
     }
 
-    //u partial view se može slati jedan item, pa je više podataka wrappano
-    public class TeamManagementWrapperModel
+
+     //u partial view se može slati jedan item, pa je više podataka wrappano
+        public class TeamManagementWrapperModel
+        {
+            public List<Team> TeamList { get; set; }
+            public List<int> IntList { get; set; }
+
+            public List<String> ManagerNames { get; set; }
+        }
+
+        public class TeamDetailsWrapperModel
+        {
+            public Team Team { get; set; }
+            public List<Employee> Employees { get; set; }
+
+        }
+
+        public class EmployeeViewModel
+        {
+            public List<Employee> Employees { get; set; }
+            public Dictionary<int, List<string>> EquipmentNamesDictionary { get; set; }
+        }
+
+        public class ClockInViewModel
+        {
+            public List<Employee> Employees { get; set; }
+            public List<ClockIn> ClockIns { get; set; }
+
+        }
+
+        public class EquipmentManagerWrapperModel
     {
-        public List<Team> TeamList { get; set; }
-        public List<int> IntList { get; set; }
+        public List<Equipment> Equipment { get; set; }
 
-        public List<String> ManagerNames { get; set; }
-    }
-
-    public class TeamDetailsWrapperModel
-    {
-        public Team Team { get; set; }
-        public List<Employee> Employees { get; set; }
+        public List<EquipmentManagerRequestModel> EquipmentRequests { get; set; }
 
     }
 
-    public class EmployeeViewModel
-    {
-        public List<Employee> Employees { get; set; }
-        public Dictionary<int, List<string>> EquipmentNamesDictionary { get; set; }
-    }
 
-    public class ClockInViewModel
-    {
-        public List<Employee> Employees { get; set; }
-        public List<ClockIn> ClockIns { get; set; }
-
-    }
-
-    public class TeamViewModel
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int ManagerId { get; set; }
-        public List<int> SelectedEmployeeIds { get; set; }
-        public List<Employee> Managers { get; set; }
-        public List<Employee> AvailableEmployees { get; set; }
-    }
-
-
-    public class RequestManagementWrapperModel
+    public class EquipmentManagerRequestModel
     {
         public string Id { get; set; }
         public string Summary { get; set; }
@@ -1074,9 +1218,10 @@ namespace VirtualOffice.Controllers
 
         public DateTime CreatedDate { get; set; }
 
+
     }
 
-    public class RequestOoOManagerViewModel
+     public class RequestEquipmentManagerViewModel
     {
         public string RequestID { get; set; }
         public int RequestTypeID { get; set; }
@@ -1099,25 +1244,74 @@ namespace VirtualOffice.Controllers
         public string EmployeeFullName { get; set; }
         public int EmployeeID { get; set; }
     }
-    public class EmployeeEvaluationViewModel
-    {
-        public List<Employee> Employees { get; set; }
-
-        public Employee LoggedInEmployee { get; set; }
-
-        public EvaluationForm EvaluationForm { get; set; }
-
-        public List<EvaluationType> EvaluationType { get; set; }
-
-        public int EvaluationTypeId { get; set; }
-        public int EmployeeId { get; set; }
-
-        public int ManagerId { get; set; }
-
-        public bool IsSubmissionSuccessful { get; set; }
-
-        public List<EvaluationForm> EvaluationFormList { get; set; }
+  
+  public class TeamViewModel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int ManagerId { get; set; }
+            public List<int> SelectedEmployeeIds { get; set; }
+            public List<Employee> Managers { get; set; }
+            public List<Employee> AvailableEmployees { get; set; }
+        }
 
 
-    }
+        public class RequestManagementWrapperModel
+        {
+            public string Id { get; set; }
+            public string Summary { get; set; }
+            public string Type { get; set; }
+            public string Status { get; set; }
+            public int StatusId { get; set; }
+            public string EmployeeFullName { get; set; }
+
+            public DateTime CreatedDate { get; set; }
+
+        }
+
+        public class RequestOoOManagerViewModel
+        {
+            public string RequestID { get; set; }
+            public int RequestTypeID { get; set; }
+
+            public List<RequestType> RequestTypes { get; set; }
+
+            public string Summary { get; set; }
+
+            public string AdditionalInfo { get; set; }
+            public int Quantity { get; set; }
+            public int RemainingDays { get; set; }
+
+            public bool IsRequestClosed { get; set; }
+            public bool IsRequestApprovable { get; set; }
+
+            public bool? IsApproved { get; set; }
+            public bool? IsRejected { get; set; }
+            public string? Comment { get; set; }
+
+            public string EmployeeFullName { get; set; }
+            public int EmployeeID { get; set; }
+
+        }
+
+        public class EmployeeEvaluationViewModel
+        {
+            public List<Employee> Employees { get; set; }
+
+            public Employee LoggedInEmployee { get; set; }
+
+            public EvaluationForm EvaluationForm { get; set; }
+
+            public List<EvaluationType> EvaluationType { get; set; }
+
+            public int EvaluationTypeId { get; set; }
+            public int EmployeeId { get; set; }
+
+            public int ManagerId { get; set; }
+
+            public bool IsSubmissionSuccessful { get; set; }
+
+            public List<EvaluationForm> EvaluationFormList { get; set; }
+        }
+
 }

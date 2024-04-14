@@ -1,18 +1,20 @@
-﻿@model VirtualOffice.Models.Employee
+﻿@model Employee
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#" onclick="loadPartialView('employee')">Employee Management</a></li>
         <li class="breadcrumb-item active" aria-current="page">
-           <p>Create New Employee</p>
+           <p>Edit Employee</p>
         </li>
     </ol>
 </nav>
 
-<form asp-action="Create" asp-controller="Manager" method="post">
+<form asp-action="EditAccount" asp-controller="Manager" method="post">
+	<input type="hidden" name="id" asp-for="Id" value="@Model.Id" />
 	<div class="form-group">
 		<label class="control-label">First name</label>
-		<input type="text" asp-for="FirstName" class="form-control" />
+		<input asp-for="FirstName" class="form-control" />
+		<span asp-validation-for="FirstName" class="text-danger"></span>
 	</div>
 	<br />
 	<div class="form-group">
@@ -23,24 +25,11 @@
 	<br />
 	<div class="form-group">
 		<label class="control-label">Date of Birth</label>
-		<input asp-for="DateOfBirth" class="form-control">
+		<input asp-for="DateOfBirth" class="form">
 		<span asp-validation-for="DateOfBirth" class="text-danger"></span>
 	</div>
 	<br />
 	<div class="form-group">
-		<label class="control-label">Team</label>
-		<select asp-for="TeamId">
-			<option value=1>Development</option>
-			<option value=2>Marketing</option>
-			<option value=3>Finance</option>
-			<option value=4>Retail</option>
-			<option value=5>Administration</option>
-		</select>
-		<span asp-validation-for="TeamId" class="text-danger"></span>
-	</div>
-	<br />
-	<div class="form-group">
-		<button type="submit" class="btn btn-outline-success">Save</button>
+		<button type="submit" class="btn btn-outline-success">Save changes</button>
 	</div>
 </form>
-

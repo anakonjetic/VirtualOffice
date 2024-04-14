@@ -1,15 +1,15 @@
-﻿@model VirtualOffice.Models.Employee
+﻿@model Employee
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#" onclick="loadPartialView('employee')">Employee Management</a></li>
+        <li class="breadcrumb-item"><a href="#" onclick="loadPartialViewEmployee('clockIn')">Clock In - Clock Out</a></li>
         <li class="breadcrumb-item active" aria-current="page">
            <p>Edit Employee</p>
         </li>
     </ol>
 </nav>
 
-<form asp-action="SaveEmployee" asp-controller="Manager" method="post">
+<form asp-action="EditAccount" asp-controller="Employee" method="post">
 	<input type="hidden" name="id" asp-for="Id" value="@Model.Id" />
 	<div class="form-group">
 		<label class="control-label">First name</label>
@@ -33,4 +33,3 @@
 		<button type="submit" class="btn btn-outline-success">Save changes</button>
 	</div>
 </form>
-
